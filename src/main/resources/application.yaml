@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: UrlShortener
+  h2:
+    console:
+      enabled: true
+
