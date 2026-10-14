@@ -4,6 +4,8 @@ package com.eli.urlshortener.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.Instant;
+
 @Entity
 @Data
 public class Url {
@@ -19,10 +21,8 @@ public class Url {
     @ManyToOne
     private AppUser owner;
 
-    private String url;
+    private String originalUrl;
 
-    public static class Builder{
-        private AppUser owner;
-        private String url;
-    }
+    private Instant createdAt;
+    private Instant lastClicked;
 }

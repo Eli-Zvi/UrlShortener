@@ -1,6 +1,5 @@
 package com.eli.urlshortener;
 
-import com.eli.urlshortener.utility.Base62;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

@@ -5,13 +5,9 @@ public record Base62(String base62Num) {
     private final static String base62Dic = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private final static int base = 62;
 
-    public static String encode(Long num){
+    public static Base62 encode(Long num){
         if(num < 0){
             throw new ArithmeticException("Invalid input, can't encode negative numbers to Base62");
-        }
-
-        if(num < 62){
-            return String.valueOf(base62Dic.charAt(num.intValue()));
         }
 
         StringBuilder encodedNum = new StringBuilder();
@@ -28,7 +24,7 @@ public record Base62(String base62Num) {
             counter++;
         }
 
-        return encodedNum.reverse().toString();
+        return new Base62(encodedNum.reverse().toString());
     }
 
     public static Long decode(String encodedNum){

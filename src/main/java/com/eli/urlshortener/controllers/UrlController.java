@@ -1,47 +1,64 @@
 package com.eli.urlshortener.controllers;
 
+import com.eli.urlshortener.mappers.UrlMapper;
 import com.eli.urlshortener.models.Url;
 import com.eli.urlshortener.models.UrlResponse;
-import com.eli.urlshortener.repositories.UrlRepository;
-import com.eli.urlshortener.repositories.UserRepository;
+import com.eli.urlshortener.services.UrlService;
 import com.eli.urlshortener.utility.Base62;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api")
 @RequiredArgsConstructor
 public class UrlController {
 
-    private final UrlRepository urlRepository;
-    private final UserRepository userRepository;
+    private final UrlService urlService;
+    private final UrlMapper urlMapper;
 
-    @GetMapping(value = "/{code}")
-    public ResponseEntity<Void> getUrlAndRedirect(@PathVariable("code") String code){
-        Optional<Url> optional = urlRepository.findById(Base62.decode(code));
+    @GetMapping(value = "/redirect/{shortCode}")
+    public ResponseEntity<Void> redirect(@PathVariable("shortCode") String code){
+        Url redirectUrl = urlService.getUrl(code);
 
-        if(optional.isPresent()){
-            return ResponseEntity
+        return ResponseEntity
                     .status(HttpStatus.SEE_OTHER)
-                    .location(URI.create("https://" + optional.get().getUrl()))
+                    .location(URI.create("https://" + redirectUrl.getOriginalUrl()))
                     .build();
-        }
+    }
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    @GetMapping("/urls")
+    @ResponseStatus(HttpStatus.OK) //TODO: PAGING AND SORTING
+    public List<UrlResponse> getUrls(){
+        return urlService.getUrls()
+                .stream()
+                .map(url->
+                        new UrlResponse(url.getOwner().getUsername(), url.getOriginalUrl(), Base62.encode(url.getId()))
+                ).toList();
+    }
+
+    @GetMapping("/urls/{shortCode}")
+    public UrlResponse getUrl(@PathVariable("shortCode") String code){
+        Url url = urlService.getUrl(code);
+
+        return urlMapper.mapUrlToResponse(url);
+    }
+
+    @DeleteMapping("/urls/{shortCode}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUrl(@PathVariable("shortCode") String code){
+        urlService.deleteUrl(code);
     }
 
     @PostMapping(value = "/", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public UrlResponse addUrl(@RequestBody Url url){
-        userRepository.save(url.getOwner());
-        Url savedUrl = urlRepository.save(url);
+        Url savedUrl = urlService.addUrl(url);
 
-        return new UrlResponse(savedUrl.getOwner(), savedUrl.getUrl(), new Base62(Base62.encode(savedUrl.getId())));
+        return urlMapper.mapUrlToResponse(savedUrl);
     }
 }
