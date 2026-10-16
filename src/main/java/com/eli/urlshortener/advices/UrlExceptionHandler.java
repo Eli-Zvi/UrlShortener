@@ -3,23 +3,31 @@ package com.eli.urlshortener.advices;
 import com.eli.urlshortener.exceptions.UrlAlreadyExistsException;
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ResponseStatusException;
+
 
 @RestControllerAdvice
-public class UrlExceptionHandler {
+public class UrlExceptionHandler { //TODO: Capture validation related errors
     @ExceptionHandler({UrlAlreadyExistsException.class, ShortCodeNotFoundException.class})
-    public ResponseEntity<String> handleUrlExceptions(RuntimeException ex){
+    public ProblemDetail handleUrlExceptions(RuntimeException ex){
+        ProblemDetail defaultResponse = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+
         switch (ex){
-            case UrlAlreadyExistsException urlEx ->
-                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Url Already exists");
+            case UrlAlreadyExistsException urlEx -> {
+                return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, urlEx.getMessage());
+            }
 
-            case ShortCodeNotFoundException urlEx ->
-                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The given short code does not exist");
+            case ShortCodeNotFoundException urlEx -> {
+                return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, urlEx.getMessage());
+            }
 
-            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            default -> {
+                return defaultResponse;
+            }
         }
     }
 }

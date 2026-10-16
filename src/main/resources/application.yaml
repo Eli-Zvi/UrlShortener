@@ -5,3 +5,8 @@ spring:
     console:
       enabled: true
 
+logging:
+  level:
+    root: info
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
