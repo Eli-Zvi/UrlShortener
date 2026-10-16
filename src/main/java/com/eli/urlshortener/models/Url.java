@@ -2,6 +2,7 @@ package com.eli.urlshortener.models;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.Instant;
@@ -21,8 +22,9 @@ public class Url {
     @ManyToOne
     private AppUser owner;
 
+    @NotNull
     private String originalUrl;
 
-    private Instant createdAt;
+    private final Instant createdAt = Instant.now();
     private Instant lastClicked;
 }
