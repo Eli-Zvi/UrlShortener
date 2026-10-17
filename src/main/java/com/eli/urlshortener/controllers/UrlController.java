@@ -1,6 +1,7 @@
 package com.eli.urlshortener.controllers;
 
-import com.eli.urlshortener.mappers.UrlMapper;
+import com.eli.urlshortener.infrastructure.mappers.UrlMapper;
+import com.eli.urlshortener.models.AppUser;
 import com.eli.urlshortener.models.Url;
 import com.eli.urlshortener.DTOs.UrlResponse;
 import com.eli.urlshortener.services.UrlService;
@@ -59,7 +60,8 @@ public class UrlController {
 
     @PostMapping(value = "/", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public UrlResponse addUrl(@RequestBody @Valid Url url, @AuthenticationPrincipal UserDetails auth){
+    public UrlResponse addUrl(@RequestBody @Valid Url url, @AuthenticationPrincipal UserDetails user){
+        url.setOwner((AppUser)user);
         Url savedUrl = urlService.addUrl(url);
 
         return urlMapper.mapUrlToResponse(savedUrl);

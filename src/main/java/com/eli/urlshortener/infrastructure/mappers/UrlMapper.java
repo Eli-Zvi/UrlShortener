@@ -1,4 +1,4 @@
-package com.eli.urlshortener.mappers;
+package com.eli.urlshortener.infrastructure.mappers;
 
 import com.eli.urlshortener.DTOs.UrlDto;
 import com.eli.urlshortener.models.Url;
