@@ -21,7 +21,6 @@ public class UrlServiceTest {
         UrlRepository urlRepository = mock(UrlRepository.class);
         UrlService urlService = new UrlService(urlRepository);
 
-        when(urlRepository.)
 
         //method call
 
