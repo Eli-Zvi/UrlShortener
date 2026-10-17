@@ -6,6 +6,7 @@ import com.eli.urlshortener.models.Url;
 import com.eli.urlshortener.DTOs.UrlResponse;
 import com.eli.urlshortener.services.UrlService;
 
+import com.eli.urlshortener.utility.Base62;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class UrlController {
     private final UrlMapper urlMapper;
 
     @GetMapping(value = "/redirect/{shortCode}") //TODO: make a service method to update last clicked
-    public ResponseEntity<Void> redirect(@PathVariable("shortCode") String code){
+    public ResponseEntity<Void> redirect(@PathVariable("shortCode") Base62 code){
         Url redirectUrl = urlService.getUrl(code);
 
         return ResponseEntity
@@ -46,7 +47,7 @@ public class UrlController {
     }
 
     @GetMapping("/urls/{shortCode}")
-    public UrlResponse getUrl(@PathVariable("shortCode") String code){
+    public UrlResponse getUrl(@PathVariable("shortCode") Base62 code){
         Url url = urlService.getUrl(code);
 
         return urlMapper.mapUrlToResponse(url);
@@ -54,7 +55,7 @@ public class UrlController {
 
     @DeleteMapping("/urls/{shortCode}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUrl(@PathVariable("shortCode") String code){
+    public void deleteUrl(@PathVariable("shortCode") Base62 code){
         urlService.deleteUrl(code);
     }
 

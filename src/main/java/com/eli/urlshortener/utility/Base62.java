@@ -5,6 +5,11 @@ public record Base62(String base62Num) {
     private final static String base62Dic = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private final static int base = 62;
 
+    /**
+     * Static Constructor using a Long
+     * @param num
+     * @return an instance of Base62 with the given num converted to Base62
+     */
     public static Base62 encode(Long num){
         if(num < 0){
             throw new ArithmeticException("Invalid input, can't encode negative numbers to Base62");
@@ -27,13 +32,17 @@ public record Base62(String base62Num) {
         return new Base62(encodedNum.reverse().toString());
     }
 
-    public static Long decode(String encodedNum){
+    /**
+     * Decodes the object's Base62 number to a Long
+     * @return a decoded Base62 number in the form of base 10(Long)
+     */
+    public Long decode(){
         long result = 0L;
         int counter = 0;
 
-        while(counter != encodedNum.length()){
-            char currentChar = encodedNum.charAt(counter);
-            int placeValue = (int) Math.pow(base, encodedNum.length() - counter - 1); //placeValue offset by 1 to account for last char
+        while(counter != this.base62Num.length()){
+            char currentChar = this.base62Num.charAt(counter);
+            int placeValue = (int) Math.pow(base, this.base62Num.length() - counter - 1); //placeValue offset by 1 to account for last char
             result +=  ((long) base62Dic.indexOf(currentChar) * (placeValue));
             counter++;
         }

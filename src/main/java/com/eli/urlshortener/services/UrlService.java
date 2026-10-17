@@ -26,8 +26,8 @@ public class UrlService {
         return urlRepository.save(url);
     }
 
-    public void deleteUrl(String code){
-        Long id = Base62.decode(code);
+    public void deleteUrl(Base62 code){
+        Long id = code.decode();
 
         if(!urlRepository.existsById(id)){
             throw new ShortCodeNotFoundException(String.format("Short code %s does not exist in the database", code));
@@ -36,8 +36,8 @@ public class UrlService {
         urlRepository.deleteById(id);
     }
 
-    public Url getUrl(String code){
-        Long id = Base62.decode(code);
+    public Url getUrl(Base62 code){
+        Long id = code.decode();
 
         Optional<Url> optional = urlRepository.findById(id);
 
