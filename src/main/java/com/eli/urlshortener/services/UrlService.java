@@ -2,6 +2,7 @@ package com.eli.urlshortener.services;
 
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.mappers.UrlMapper;
+import com.eli.urlshortener.models.AppUser;
 import com.eli.urlshortener.models.Url;
 import com.eli.urlshortener.repositories.UrlRepository;
 import com.eli.urlshortener.repositories.UserRepository;
@@ -24,9 +25,12 @@ public class UrlService {
     private final UrlRepository urlRepository;
 
     public Url addUrl(Url url){
-        if(userRepository.existsByUsername(url.getOwner().getUsername()))
-                url.setOwner(userRepository.getAppUserByUsername(url.getOwner().getUsername()));
-        else userRepository.save(url.getOwner());
+        Optional<AppUser> optionalUser = userRepository
+                .getAppUserByUsername(url.getOwner().getUsername());
+
+        if(optionalUser.isPresent()){
+            url.setOwner(optionalUser.get());
+        }else userRepository.save(url.getOwner());
 
         url.setOriginalUrl(normalizeUrl(url.getOriginalUrl()));
 
