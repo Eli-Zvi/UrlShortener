@@ -1,4 +1,4 @@
-package com.eli.urlshortener.urlshortenertests.urlservicetests;
+package com.eli.urlshortener.urlshortenertests.urlservice;
 
 import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;

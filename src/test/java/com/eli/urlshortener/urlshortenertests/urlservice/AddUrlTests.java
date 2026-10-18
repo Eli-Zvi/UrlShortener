@@ -1,4 +1,4 @@
-package com.eli.urlshortener.urlshortenertests.urlservicetests;
+package com.eli.urlshortener.urlshortenertests.urlservice;
 
 import com.eli.urlshortener.shared.models.AppUser;
 import com.eli.urlshortener.shared.utility.Base62;
