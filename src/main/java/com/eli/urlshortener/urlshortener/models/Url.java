@@ -17,7 +17,8 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(
             name="url_code_seq_gen",
-            initialValue = 238328 // Make sure shortened URL has at least 4 digits(62 ^ 3), starts at 1000
+            initialValue = 238328, // Make sure shortened URL has at least 4 digits(62 ^ 3), starts at 1000
+            allocationSize = 1
     )
     private Long id;
 

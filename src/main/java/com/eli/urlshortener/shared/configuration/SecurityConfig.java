@@ -28,7 +28,7 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.cors(Customizer.withDefaults());
         httpSecurity.authorizeHttpRequests((authorize) ->{
-            authorize.requestMatchers("/error").permitAll();
+            authorize.requestMatchers("/error", "/register").permitAll();
            authorize.requestMatchers("/api/redirect/**").permitAll();
            authorize.requestMatchers("/api/**").authenticated();
            authorize.requestMatchers("/h2-console/**").permitAll();

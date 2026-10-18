@@ -19,8 +19,12 @@ public class UrlShortenerApplication {
     public CommandLineRunner addUsers(UserRepository userRepository, PasswordEncoder encoder){
 
         return args -> {
-            if (!userRepository.existsByUsername("test"))
-                userRepository.save(new AppUser("test", encoder.encode("test")));
+            AppUser user = new AppUser();
+            user.setUsername("test");
+            user.setPassword(encoder.encode("test"));
+            if (!userRepository.existsByUsername("test")) {
+                userRepository.save(user);
+            }
         };
     }
 

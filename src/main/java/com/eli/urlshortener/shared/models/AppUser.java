@@ -1,6 +1,7 @@
 package com.eli.urlshortener.shared.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +17,21 @@ import java.util.UUID;
 @Entity
 @Data
 @RequiredArgsConstructor
-@NoArgsConstructor(force = true)
 public class AppUser implements UserDetails {
+
+    public AppUser(String username, String password){
+        this.username = username;
+        this.password = password;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true)
-    private final String username;
-    private final String password;
+    @Column(unique = true, nullable = false)
+    private String username;
+    @Column(nullable = false)
+    private String password;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
