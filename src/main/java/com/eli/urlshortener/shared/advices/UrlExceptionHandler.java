@@ -2,6 +2,7 @@ package com.eli.urlshortener.shared.advices;
 
 import com.eli.urlshortener.shared.exceptions.UrlAlreadyExistsException;
 import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
+import com.eli.urlshortener.shared.exceptions.UsernameAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.BindingResult;
@@ -51,5 +52,10 @@ public class UrlExceptionHandler { //TODO: Capture validation related errors
         }
 
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message.toString());
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ProblemDetail handleUsernameExistsException(UsernameAlreadyExistsException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 }
