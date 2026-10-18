@@ -1,9 +1,9 @@
-package com.eli.urlshortener.urlshortenertests.urlservicetests;
+package com.eli.urlshortener.urlshortenertests.urlservice;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class DeleteUrlTests {
+public class GetUrlsTests {
 
     @Test
     @DisplayName("""
