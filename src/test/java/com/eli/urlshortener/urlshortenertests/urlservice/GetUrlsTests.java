@@ -1,17 +1,7 @@
 package com.eli.urlshortener.urlshortenertests.urlservice;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
+/**
+ * Empty for now, just a simple repository call
+ */
 public class GetUrlsTests {
-
-    @Test
-    @DisplayName("""
-            GIVEN:
-            WHEN:
-            THEN:
-            """)
-    void test1(){
-
-    }
 }

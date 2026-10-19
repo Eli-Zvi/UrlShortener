@@ -1,13 +1,12 @@
 package com.eli.urlshortener.urlanalytics.controllers;
 
 import com.eli.urlshortener.shared.utility.Base62;
+import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksDto;
 import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,8 +22,9 @@ public class AnalyticsController {
         return analyticsService.getUrlRedirectionEvents(shortCode);
     }
 
-    @GetMapping("/totalClicks/{shortCode}")
-    public Long getTotalClicks(@PathVariable Base62 shortCode){
-        return analyticsService.getTotalClicks(shortCode);
+    @GetMapping(value = "/totalClicks/{shortCode}", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
+    public TotalClicksDto getTotalClicks(@PathVariable Base62 shortCode){
+        return new TotalClicksDto(shortCode.base62Num(), analyticsService.getTotalClicks(shortCode));
     }
 }

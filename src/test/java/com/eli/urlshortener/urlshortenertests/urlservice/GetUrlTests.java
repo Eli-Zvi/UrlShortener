@@ -24,10 +24,10 @@ import static org.mockito.Mockito.*;
 public class GetUrlTests {
 
     @Mock
-    UrlRepository urlRepository;
+    private UrlRepository urlRepository;
 
     @InjectMocks
-    UrlService urlService;
+    private UrlService urlService;
 
     private Url testUrl;
     private Base62 code;
@@ -48,7 +48,7 @@ public class GetUrlTests {
             THEN: url is not returned
             AND: an exception is thrown
             """)
-    void test1(){
+    void shortCodeDoesNotExistTest(){
         //assumptions
         when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.empty());
 
@@ -64,7 +64,7 @@ public class GetUrlTests {
             WHEN: getUrl is called with the shortcode
             THEN: url is returned
             """)
-    void test2(){
+    void shortCodeExistsTest(){
         //assumptions
         when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.of(testUrl));
 

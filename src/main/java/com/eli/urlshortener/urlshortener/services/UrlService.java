@@ -2,6 +2,7 @@ package com.eli.urlshortener.urlshortener.services;
 
 import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventDto;
+import com.eli.urlshortener.urlanalytics.infrastructure.mappers.UrlToRedirectionEventMapper;
 import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import com.eli.urlshortener.urlshortener.models.Url;
@@ -31,11 +32,7 @@ public class UrlService {
         target.setLastClicked(Instant.now());
         urlRepository.save(target);
 
-        RedirectionEvent event = new RedirectionEvent();
-
-
-        analyticsService.addEvent(new RedirectionEventDto(target.getId(), target.getOwner().getUsername(),
-                target.getLastClicked(), target.getCreatedAt(), "temp", "temp"));
+        analyticsService.addEvent(UrlToRedirectionEventMapper.mapUrlToEvent(target));
 
         return target;
     }
