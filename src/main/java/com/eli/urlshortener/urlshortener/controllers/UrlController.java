@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api")
+@RequestMapping(path = "/api", consumes = "application/json")
 @RequiredArgsConstructor
 @CrossOrigin //TODO: LIMIT CROSS ORIGINS URLS LATER
 public class UrlController {

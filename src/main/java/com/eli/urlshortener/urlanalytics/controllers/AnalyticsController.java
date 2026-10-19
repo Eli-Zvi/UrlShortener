@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/analytics")
+@RequestMapping(value = "/api/analytics", consumes = "application/json")
 @RequiredArgsConstructor
 public class AnalyticsController {
 
@@ -22,7 +22,7 @@ public class AnalyticsController {
         return analyticsService.getUrlRedirectionEvents(shortCode);
     }
 
-    @GetMapping(value = "/totalClicks/{shortCode}", produces = "application/json")
+    @GetMapping(value = "/totalClicks/{shortCode}")
     @ResponseStatus(HttpStatus.OK)
     public TotalClicksDto getTotalClicks(@PathVariable Base62 shortCode){
         return new TotalClicksDto(shortCode.base62Num(), analyticsService.getTotalClicks(shortCode));
