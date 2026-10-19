@@ -7,15 +7,15 @@ spring:
   datasource:
     generate-unique-name: false
     name: url_shortener
-    url: jdbc:postgresql://localhost:5432/urlshortener
-    username: postgres
-    password: root #TODO: change to env variable before committing
+    url: ${URL_SHORTENER_DB_URL}
+    username: ${URL_SHORTENER_DB_USERNAME}
+    password: ${URL_SHORTENER_DB_PASSWORD} #TODO: change to env variable before committing
     driver-class-name: org.postgresql.Driver
   jpa:
     properties:
       .hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: update #TODO: Change to flyway to ensure safe migration
     show-sql: true
 
 logging:
