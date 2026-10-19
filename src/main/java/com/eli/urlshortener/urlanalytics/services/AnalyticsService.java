@@ -3,6 +3,7 @@ package com.eli.urlshortener.urlanalytics.services;
 import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.shared.utility.Base62;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventDto;
+import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksDto;
 import com.eli.urlshortener.urlanalytics.infrastructure.mappers.RedirectionEventMapper;
 import com.eli.urlshortener.urlanalytics.infrastructure.repositories.RedirectionEventRepository;
 import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
@@ -23,18 +24,14 @@ public class AnalyticsService {
         if (this.analyticsExistsByUrlId(urlId)){
             return redirectionEventRepository.findAllByUrlId(urlId);
         }
-
+        //Could/should be changed to no exception and an empty body
         throw new ShortCodeNotFoundException(String.format("No analytics available for short code %s", shortCode));
     }
 
     public Long getTotalClicks(Base62 shortCode){
         Long urlId = shortCode.decode();
 
-        if(this.analyticsExistsByUrlId(urlId)) {
-            return redirectionEventRepository.countAllByUrlId(urlId);
-        }
-
-        throw new ShortCodeNotFoundException(String.format("No analytics available for short code %s", shortCode));
+        return redirectionEventRepository.countAllByUrlId(urlId);
     }
 
     public void addEvent(RedirectionEventDto eventDto){

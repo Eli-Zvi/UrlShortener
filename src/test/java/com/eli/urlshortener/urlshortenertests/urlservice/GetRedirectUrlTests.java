@@ -2,6 +2,8 @@ package com.eli.urlshortener.urlshortenertests.urlservice;
 
 import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.shared.utility.Base62;
+import com.eli.urlshortener.urlanalytics.infrastructure.mappers.UrlToRedirectionEventMapper;
+import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
 import com.eli.urlshortener.shared.models.AppUser;
 import com.eli.urlshortener.urlshortener.models.Url;
@@ -23,10 +25,13 @@ import static org.mockito.Mockito.*;
 public class GetRedirectUrlTests {
 
     @Mock
-    UrlRepository urlRepository;
+    private UrlRepository urlRepository;
+
+    @Mock
+    private AnalyticsService analyticsService;
 
     @InjectMocks
-    UrlService urlService;
+    private UrlService urlService;
 
     private Url testUrl;
     private Base62 code;
@@ -46,7 +51,7 @@ public class GetRedirectUrlTests {
             WHEN: getRedirectUrl is called with the shortcode
             THEN: url is returned and lastClicked is updated
             """)
-    void test1(){
+    void shortCodeExistsTest(){
         //assumptions
         when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.of(testUrl));
         //method call
@@ -55,6 +60,7 @@ public class GetRedirectUrlTests {
         //assertions
 
         verify(urlRepository, times(1)).findById(testUrl.getId()); //check that getUrl executed successfully
+        verify(analyticsService, times(1)).addEvent(UrlToRedirectionEventMapper.mapUrlToEvent(testUrl));
         assertNotNull(result.getLastClicked()); //check that lastClicked was updated
         assertEquals(testUrl, result); //check that the testUrl with lastClicked updated is what was returned
     }
@@ -65,7 +71,7 @@ public class GetRedirectUrlTests {
             WHEN: getRedirectUrl is called with the shortcode
             THEN: a ShortCodeNotFoundException is thrown
             """)
-    void test2() {
+    void shortCodeDoesNotExistTest() {
         //assumptions
         when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.empty());
 
