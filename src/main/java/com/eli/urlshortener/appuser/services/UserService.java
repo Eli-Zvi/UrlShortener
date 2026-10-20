@@ -1,11 +1,11 @@
-package com.eli.urlshortener.shared.services;
+package com.eli.urlshortener.appuser.services;
 
-import com.eli.urlshortener.shared.DTOs.UserRegistrationRequestDto;
-import com.eli.urlshortener.shared.DTOs.UserRegistrationResponseDto;
+import com.eli.urlshortener.appuser.DTOs.UserRegistrationRequestDto;
+import com.eli.urlshortener.appuser.DTOs.UserRegistrationResponseDto;
 import com.eli.urlshortener.shared.exceptions.UsernameAlreadyExistsException;
-import com.eli.urlshortener.shared.infrastructure.UserRepository;
-import com.eli.urlshortener.shared.models.AppUser;
-import com.eli.urlshortener.shared.infrastructure.mappers.UserRegistrationMapper;
+import com.eli.urlshortener.appuser.infrastructure.UserRepository;
+import com.eli.urlshortener.appuser.models.AppUser;
+import com.eli.urlshortener.appuser.infrastructure.mappers.UserRegistrationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

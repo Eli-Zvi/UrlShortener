@@ -1,9 +1,8 @@
-package com.eli.urlshortener.shared.controllers;
+package com.eli.urlshortener.appuser.controllers;
 
-import com.eli.urlshortener.shared.DTOs.UserRegistrationRequestDto;
-import com.eli.urlshortener.shared.DTOs.UserRegistrationResponseDto;
-import com.eli.urlshortener.shared.models.AppUser;
-import com.eli.urlshortener.shared.services.UserService;
+import com.eli.urlshortener.appuser.DTOs.UserRegistrationRequestDto;
+import com.eli.urlshortener.appuser.DTOs.UserRegistrationResponseDto;
+import com.eli.urlshortener.appuser.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

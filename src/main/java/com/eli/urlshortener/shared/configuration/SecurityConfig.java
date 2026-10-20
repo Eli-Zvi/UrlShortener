@@ -1,6 +1,6 @@
 package com.eli.urlshortener.shared.configuration;
 
-import com.eli.urlshortener.shared.infrastructure.UserRepository;
+import com.eli.urlshortener.appuser.infrastructure.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;

@@ -1,4 +1,4 @@
-package com.eli.urlshortener.shared.models;
+package com.eli.urlshortener.appuser.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;

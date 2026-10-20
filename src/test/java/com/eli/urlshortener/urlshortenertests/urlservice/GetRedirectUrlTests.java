@@ -6,7 +6,7 @@ import com.eli.urlshortener.urlanalytics.infrastructure.mappers.UrlToRedirection
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
-import com.eli.urlshortener.shared.models.AppUser;
+import com.eli.urlshortener.appuser.models.AppUser;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.services.UrlService;
 import org.junit.jupiter.api.BeforeEach;

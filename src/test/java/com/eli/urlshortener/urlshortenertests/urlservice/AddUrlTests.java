@@ -1,8 +1,7 @@
 package com.eli.urlshortener.urlshortenertests.urlservice;
 
-import com.eli.urlshortener.shared.models.AppUser;
+import com.eli.urlshortener.appuser.models.AppUser;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
-import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapperImpl;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
 import com.eli.urlshortener.urlshortener.models.Url;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;

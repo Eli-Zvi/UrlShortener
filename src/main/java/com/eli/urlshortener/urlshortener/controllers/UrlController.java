@@ -3,12 +3,10 @@ package com.eli.urlshortener.urlshortener.controllers;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
-import com.eli.urlshortener.shared.models.AppUser;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.DTOs.UrlResponseDto;
 import com.eli.urlshortener.urlshortener.services.UrlService;
 
-import com.eli.urlshortener.shared.utility.Base62;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
