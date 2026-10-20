@@ -1,15 +1,17 @@
 package com.eli.urlshortener.urlanalytics.services;
 
-import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
-import com.eli.urlshortener.shared.utility.Base62;
+import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
+import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
+import com.eli.urlshortener.urlshortener.UrlRedirectEvent;
+import com.eli.urlshortener.util.Base62;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventRequestDto;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventResponseDto;
 import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksRequestDto;
 import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksResponseDto;
 import com.eli.urlshortener.urlanalytics.infrastructure.mappers.RedirectionEventMapper;
 import com.eli.urlshortener.urlanalytics.infrastructure.repositories.RedirectionEventRepository;
-import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,8 +44,16 @@ public class AnalyticsService {
         return new TotalClicksResponseDto(shortCode.base62Num(), redirectionEventRepository.countAllByUrlId(urlId));
     }
 
-    public void addEvent(RedirectionEventResponseDto eventDto){
-        redirectionEventRepository.save(redirectionEventMapper.mapDtoToEntity(eventDto));
+    @ApplicationModuleListener
+    public void addEvent(UrlRedirectEvent redirectEvent){
+        RedirectionEvent event = new RedirectionEvent();
+        event.setOwnerUsername(redirectEvent.username());
+        event.setCreatedAt(redirectEvent.createdAt());
+        event.setLastClicked(redirectEvent.lastClicked());
+        event.setUserAgent(redirectEvent.userAgent());
+        event.setUrlId(redirectEvent.urlId());
+        event.setReferrer(redirectEvent.referrer());
+        redirectionEventRepository.save(event);
     }
 
     private boolean analyticsExistsByUrlId(Long urlId){

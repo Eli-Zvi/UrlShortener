@@ -1,18 +1,18 @@
 package com.eli.urlshortener.urlshortener.services;
 
-import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
+import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.appuser.models.AppUser;
-import com.eli.urlshortener.urlanalytics.infrastructure.mappers.UrlToRedirectionEventMapper;
-import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlResponseDto;
+import com.eli.urlshortener.urlshortener.UrlRedirectEvent;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
-import com.eli.urlshortener.shared.utility.Base62;
+import com.eli.urlshortener.util.Base62;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ import java.util.Optional;
 public class UrlService {
 
     private final UrlRepository urlRepository;
-    private final AnalyticsService analyticsService;
+    private final ApplicationEventPublisher eventPublisher;
     private final UrlMapper urlMapper;
 
     @Transactional
@@ -37,7 +37,8 @@ public class UrlService {
         target.setLastClicked(Instant.now());
         urlRepository.save(target);
 
-        analyticsService.addEvent(UrlToRedirectionEventMapper.mapUrlToEvent(target));
+        eventPublisher.publishEvent(new UrlRedirectEvent(target.getId(), target.getOwner().getUsername(),
+                target.getLastClicked(), target.getCreatedAt(), "temp", "temp"));
 
         return target;
     }

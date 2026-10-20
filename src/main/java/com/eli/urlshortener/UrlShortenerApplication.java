@@ -1,12 +1,7 @@
 package com.eli.urlshortener;
 
-import com.eli.urlshortener.appuser.models.AppUser;
-import com.eli.urlshortener.appuser.infrastructure.UserRepository;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class UrlShortenerApplication {
@@ -14,18 +9,4 @@ public class UrlShortenerApplication {
     public static void main(String[] args) {
         SpringApplication.run(UrlShortenerApplication.class, args);
     }
-
-    @Bean
-    public CommandLineRunner addUsers(UserRepository userRepository, PasswordEncoder encoder){
-
-        return args -> {
-            AppUser user = new AppUser();
-            user.setUsername("test");
-            user.setPassword(encoder.encode("test"));
-            if (!userRepository.existsByUsername("test")) {
-                userRepository.save(user);
-            }
-        };
-    }
-
 }

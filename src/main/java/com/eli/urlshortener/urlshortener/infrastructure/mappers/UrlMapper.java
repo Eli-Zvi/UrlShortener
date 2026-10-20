@@ -3,9 +3,7 @@ package com.eli.urlshortener.urlshortener.infrastructure.mappers;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.DTOs.UrlResponseDto;
-import com.eli.urlshortener.shared.utility.Base62;
 import org.mapstruct.Mapper;
-import org.springframework.stereotype.Service;
 
 @Mapper(componentModel = "spring")
 public interface UrlMapper {

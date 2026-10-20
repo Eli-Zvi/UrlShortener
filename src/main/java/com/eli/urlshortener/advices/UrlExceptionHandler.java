@@ -1,8 +1,8 @@
-package com.eli.urlshortener.shared.advices;
+package com.eli.urlshortener.advices;
 
-import com.eli.urlshortener.shared.exceptions.UrlAlreadyExistsException;
-import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
-import com.eli.urlshortener.shared.exceptions.UsernameAlreadyExistsException;
+import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
+import com.eli.urlshortener.exceptions.UrlAlreadyExistsException;
+import com.eli.urlshortener.exceptions.UsernameAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.BindingResult;

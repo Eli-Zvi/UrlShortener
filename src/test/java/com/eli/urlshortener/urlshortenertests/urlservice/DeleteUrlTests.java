@@ -1,8 +1,8 @@
 package com.eli.urlshortener.urlshortenertests.urlservice;
 
-import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
+import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.appuser.models.AppUser;
-import com.eli.urlshortener.shared.utility.Base62;
+import com.eli.urlshortener.util.Base62;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
 import com.eli.urlshortener.urlshortener.models.Url;

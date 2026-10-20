@@ -1,4 +1,4 @@
-package com.eli.urlshortener.shared.utility;
+package com.eli.urlshortener.util;
 
 public record Base62(String base62Num) {
 
