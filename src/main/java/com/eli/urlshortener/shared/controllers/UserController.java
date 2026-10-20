@@ -1,6 +1,7 @@
 package com.eli.urlshortener.shared.controllers;
 
-import com.eli.urlshortener.shared.DTOs.UserRegistrationDto;
+import com.eli.urlshortener.shared.DTOs.UserRegistrationRequestDto;
+import com.eli.urlshortener.shared.DTOs.UserRegistrationResponseDto;
 import com.eli.urlshortener.shared.models.AppUser;
 import com.eli.urlshortener.shared.services.UserService;
 import jakarta.validation.Valid;
@@ -17,7 +18,7 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserRegistrationDto registerUser(@RequestBody @Valid AppUser appUser){
-        return new UserRegistrationDto(userService.registerUser(appUser));
+    public UserRegistrationResponseDto registerUser(@RequestBody @Valid UserRegistrationRequestDto registrationRequestDto){
+        return userService.registerUser(registrationRequestDto);
     }
 }

@@ -1,5 +1,6 @@
 package com.eli.urlshortener.usertests.userservice;
 
+import com.eli.urlshortener.shared.DTOs.UserRegistrationRequestDto;
 import com.eli.urlshortener.shared.exceptions.UsernameAlreadyExistsException;
 import com.eli.urlshortener.shared.infrastructure.UserRepository;
 import com.eli.urlshortener.shared.models.AppUser;
@@ -12,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,7 +47,11 @@ public class RegisterUserTests {
     void userExistsTest(){
         when(userRepository.existsByUsername("test")).thenReturn(true);
 
-        assertThrows(UsernameAlreadyExistsException.class, () -> userService.registerUser(appUser));
+        assertThrows(UsernameAlreadyExistsException.class, () ->
+                userService.registerUser(
+                        new UserRegistrationRequestDto(
+                                appUser.getUsername(), appUser.getPassword()
+                                )));
     }
 
     @Test
@@ -57,12 +63,17 @@ public class RegisterUserTests {
             AND: the AppUser's username is returned
             """)
     void userDoesNotExistTest(){
-        when(userRepository.save(appUser)).thenReturn(appUser);
         when(passwordEncoder.encode("test")).thenReturn("encodedTest");
+        AppUser passEncodedUser = new AppUser(appUser.getUsername(), "encodedTest");
+        when(userRepository.save(passEncodedUser)).thenReturn(passEncodedUser);
 
-        String result = userService.registerUser(appUser);
+        String result = userService.registerUser((
+                new UserRegistrationRequestDto(
+                        appUser.getUsername(), appUser.getPassword()
+                ))).username();
 
-        verify(userRepository, times(1)).save(appUser);
+        verify(userRepository, times(1)).save(passEncodedUser);
+        verify(userRepository, times(0)).save(appUser);
         verify(passwordEncoder, times(1)).encode("test");
         assertEquals(appUser.getUsername(), result);
     }
