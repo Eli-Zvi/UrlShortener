@@ -2,9 +2,7 @@ package com.eli.urlshortener.urlshortener.services;
 
 import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.shared.models.AppUser;
-import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventDto;
 import com.eli.urlshortener.urlanalytics.infrastructure.mappers.UrlToRedirectionEventMapper;
-import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;

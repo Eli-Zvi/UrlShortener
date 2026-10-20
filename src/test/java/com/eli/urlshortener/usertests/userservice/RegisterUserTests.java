@@ -5,7 +5,7 @@ import com.eli.urlshortener.shared.exceptions.UsernameAlreadyExistsException;
 import com.eli.urlshortener.shared.infrastructure.UserRepository;
 import com.eli.urlshortener.shared.models.AppUser;
 import com.eli.urlshortener.shared.services.UserService;
-import com.eli.urlshortener.urlshortener.infrastructure.mappers.UserRegistrationMapperImpl;
+import com.eli.urlshortener.shared.infrastructure.mappers.UserRegistrationMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.testcontainers.shaded.org.checkerframework.checker.units.qual.A;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

@@ -2,6 +2,9 @@ package com.eli.urlshortener.urlanalyticstests.analyticsservice;
 
 import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.shared.utility.Base62;
+import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventRequestDto;
+import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventResponseDto;
+import com.eli.urlshortener.urlanalytics.infrastructure.mappers.RedirectionEventMapperImpl;
 import com.eli.urlshortener.urlanalytics.infrastructure.repositories.RedirectionEventRepository;
 import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -26,16 +30,19 @@ public class GetUrlRedirectionEventsTests {
     @Mock
     private RedirectionEventRepository redirectionEventRepository;
 
+    @Spy
+    private RedirectionEventMapperImpl redirectionEventMapper;
+
     @InjectMocks
     private AnalyticsService analyticsService;
 
-    private Base62 code;
+    private RedirectionEventRequestDto requestDto;
     private Long urlId;
 
     @BeforeEach
     void setUp(){
         urlId = 238328L;
-        code = Base62.encode(238328L);
+        requestDto = new RedirectionEventRequestDto(Base62.encode(238328L));
     }
 
     @Test
@@ -47,7 +54,7 @@ public class GetUrlRedirectionEventsTests {
     void noAnalyticsExistTest(){
         when(redirectionEventRepository.existsByUrlId(urlId)).thenReturn(false);
 
-        assertThrows(ShortCodeNotFoundException.class, () -> analyticsService.getUrlRedirectionEvents(code));
+        assertThrows(ShortCodeNotFoundException.class, () -> analyticsService.getUrlRedirectionEvents(requestDto));
     }
 
     @Test
@@ -57,11 +64,11 @@ public class GetUrlRedirectionEventsTests {
             THEN: a list of RedirectionEvents is returned
             """)
     void analyticsExistTest(){
-        List<RedirectionEvent> expected = new ArrayList<>();
+        List<RedirectionEventResponseDto> expected = new ArrayList<>();
         when(redirectionEventRepository.existsByUrlId(urlId)).thenReturn(true);
-        when(redirectionEventRepository.findAllByUrlId(urlId)).thenReturn(expected);
+        when(redirectionEventRepository.findAllByUrlId(urlId)).thenReturn(List.of());
 
-        List<RedirectionEvent> result = analyticsService.getUrlRedirectionEvents(code);
+        List<RedirectionEventResponseDto> result = analyticsService.getUrlRedirectionEvents(requestDto);
 
         verify(redirectionEventRepository, times(1)).findAllByUrlId(urlId);
         assertEquals(expected, result);

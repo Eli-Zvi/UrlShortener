@@ -3,6 +3,7 @@ package com.eli.urlshortener.urlshortenertests.urlservice;
 import com.eli.urlshortener.shared.models.AppUser;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
+import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapperImpl;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.services.UrlService;
@@ -26,7 +27,7 @@ public class AddUrlTests {
     private UrlRepository urlRepository;
 
     @Spy
-    private UrlMapper mapper;// = new UrlMapper();
+    private UrlMapperImpl mapper;// = new UrlMapper();
 
     @InjectMocks
     private UrlService urlService;

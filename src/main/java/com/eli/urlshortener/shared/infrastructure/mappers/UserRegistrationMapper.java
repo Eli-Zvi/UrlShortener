@@ -1,4 +1,4 @@
-package com.eli.urlshortener.urlshortener.infrastructure.mappers;
+package com.eli.urlshortener.shared.infrastructure.mappers;
 
 import com.eli.urlshortener.shared.DTOs.UserRegistrationResponseDto;
 import com.eli.urlshortener.shared.models.AppUser;
