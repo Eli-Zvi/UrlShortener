@@ -285,6 +285,7 @@ Run the test suite using:
 - **Asynchronous Analytics:** Introduce event-driven processing to decouple click tracking from URL redirection.
 - **Monitoring and Observability:** Integrate application health checks, metrics, and centralized logging to monitor service health, performance, and failures.
 - **CI/CD:** Automate builds and tests through a continuous integration pipeline.
+- **Security:** Implement JWT-based tokens for authentication and authorization
 
 ## Project Goals
 
