@@ -1,6 +1,7 @@
 package com.eli.urlshortener.shared.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,8 +30,10 @@ public class AppUser implements UserDetails {
     private UUID id;
 
     @Column(unique = true, nullable = false)
+    @Size(min = 4, max = 16)
     private String username;
     @Column(nullable = false)
+    @Size(min = 8, max = 16)
     private String password;
 
     @Override
