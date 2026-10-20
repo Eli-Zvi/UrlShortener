@@ -29,7 +29,7 @@ public class UrlController {
     private final UrlService urlService;
     private final UrlMapper urlMapper;
 
-    @GetMapping(value = "/redirect/{shortCode}") //TODO: make a service method to update last clicked
+    @GetMapping(value = "/redirect/{shortCode}")
     public ResponseEntity<Void> redirect(@PathVariable("shortCode") UrlLookUpRequestDto requestDto){
         Url redirectUrl = urlService.getRedirectUrl(requestDto);
 

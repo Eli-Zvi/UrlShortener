@@ -1,14 +1,16 @@
 package com.eli.urlshortener.urlanalytics.infrastructure.mappers;
 
 
-import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventDto;
+import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventResponseDto;
 import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
+import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 
-@Service
-public class RedirectionEventMapper {
+@Mapper(componentModel = "spring")
+public interface RedirectionEventMapper {
 
-    public RedirectionEvent mapDtoToEntity(RedirectionEventDto eventDto){
+    RedirectionEvent mapDtoToEntity(RedirectionEventResponseDto eventDto);
+    /*{
         RedirectionEvent entity = new RedirectionEvent();
         entity.setUrlId(eventDto.urlId());
         entity.setReferrer(eventDto.referrer());
@@ -18,10 +20,11 @@ public class RedirectionEventMapper {
         entity.setOwnerUsername(eventDto.username());
 
         return entity;
-    }
+    } */
 
-    public RedirectionEventDto mapEntityToDto(RedirectionEvent event){
-        return new RedirectionEventDto(event.getUrlId(), event.getOwnerUsername(), event.getLastClicked(),
+    RedirectionEventResponseDto mapEntityToDto(RedirectionEvent event);
+    /*{
+        return new RedirectionEventResponseDto(event.getUrlId(), event.getOwnerUsername(), event.getLastClicked(),
                 event.getCreatedAt(), event.getUserAgent(), event.getReferrer());
-    }
+    } */
 }

@@ -1,7 +1,10 @@
 package com.eli.urlshortener.urlanalytics.controllers;
 
 import com.eli.urlshortener.shared.utility.Base62;
-import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksDto;
+import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventRequestDto;
+import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventResponseDto;
+import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksRequestDto;
+import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksResponseDto;
 import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +21,13 @@ public class AnalyticsController {
     private final AnalyticsService analyticsService;
 
     @GetMapping("/{shortCode}")
-    public List<RedirectionEvent> getUrlRedirectionEvents(@PathVariable Base62 shortCode){
-        return analyticsService.getUrlRedirectionEvents(shortCode);
+    public List<RedirectionEventResponseDto> getUrlRedirectionEvents(@PathVariable("shortCode") RedirectionEventRequestDto requestDto){
+        return analyticsService.getUrlRedirectionEvents(requestDto);
     }
 
     @GetMapping(value = "/totalClicks/{shortCode}")
     @ResponseStatus(HttpStatus.OK)
-    public TotalClicksDto getTotalClicks(@PathVariable Base62 shortCode){
-        return new TotalClicksDto(shortCode.base62Num(), analyticsService.getTotalClicks(shortCode));
+    public TotalClicksResponseDto getTotalClicks(@PathVariable("shortCode") TotalClicksRequestDto requestDto){
+        return analyticsService.getTotalClicks(requestDto);
     }
 }
