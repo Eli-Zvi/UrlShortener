@@ -1,8 +1,8 @@
 package com.eli.urlshortener.urlshortenertests.urlservice;
 
-import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
-import com.eli.urlshortener.shared.utility.Base62;
-import com.eli.urlshortener.urlanalytics.infrastructure.mappers.UrlToRedirectionEventMapper;
+import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
+import com.eli.urlshortener.urlshortener.UrlRedirectEvent;
+import com.eli.urlshortener.util.Base62;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public class GetRedirectUrlTests {
     private UrlRepository urlRepository;
 
     @Mock
-    private AnalyticsService analyticsService;
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private UrlService urlService;
@@ -54,14 +55,17 @@ public class GetRedirectUrlTests {
             """)
     void shortCodeExistsTest(){
         //assumptions
+
         when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.of(testUrl));
+        doNothing().when(eventPublisher).publishEvent(any(UrlRedirectEvent.class));
+
         //method call
         Url result = urlService.getRedirectUrl(requestDto);
 
         //assertions
 
         verify(urlRepository, times(1)).findById(testUrl.getId()); //check that getUrl executed successfully
-        verify(analyticsService, times(1)).addEvent(UrlToRedirectionEventMapper.mapUrlToEvent(testUrl));
+
         assertNotNull(result.getLastClicked()); //check that lastClicked was updated
         assertEquals(testUrl, result); //check that the testUrl with lastClicked updated is what was returned
     }

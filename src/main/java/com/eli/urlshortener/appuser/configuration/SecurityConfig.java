@@ -1,6 +1,6 @@
-package com.eli.urlshortener.shared.configuration;
+package com.eli.urlshortener.appuser.configuration;
 
-import com.eli.urlshortener.appuser.infrastructure.UserRepository;
+import com.eli.urlshortener.appuser.infrastructure.repositories.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -28,7 +28,7 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.cors(Customizer.withDefaults());
         httpSecurity.authorizeHttpRequests((authorize) ->{
-            authorize.requestMatchers("/error", "/register", "/swagger-ui/index.html", "/v3/api-docs").permitAll();
+            authorize.requestMatchers("/error", "/register", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
            authorize.requestMatchers("/api/redirect/**").permitAll();
            authorize.requestMatchers("/api/**").authenticated();
            authorize.requestMatchers("/h2-console/**").permitAll();

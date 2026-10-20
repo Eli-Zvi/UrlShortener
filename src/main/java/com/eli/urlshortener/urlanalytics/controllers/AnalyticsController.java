@@ -1,11 +1,9 @@
 package com.eli.urlshortener.urlanalytics.controllers;
 
-import com.eli.urlshortener.shared.utility.Base62;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventRequestDto;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventResponseDto;
 import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksRequestDto;
 import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksResponseDto;
-import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

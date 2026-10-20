@@ -1,12 +1,11 @@
 package com.eli.urlshortener.urlanalyticstests.analyticsservice;
 
-import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
-import com.eli.urlshortener.shared.utility.Base62;
+import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
+import com.eli.urlshortener.util.Base62;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventRequestDto;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventResponseDto;
 import com.eli.urlshortener.urlanalytics.infrastructure.mappers.RedirectionEventMapperImpl;
 import com.eli.urlshortener.urlanalytics.infrastructure.repositories.RedirectionEventRepository;
-import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
