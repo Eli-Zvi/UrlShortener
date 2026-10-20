@@ -5,6 +5,7 @@ import com.eli.urlshortener.shared.DTOs.UserRegistrationResponseDto;
 import com.eli.urlshortener.shared.exceptions.UsernameAlreadyExistsException;
 import com.eli.urlshortener.shared.infrastructure.UserRepository;
 import com.eli.urlshortener.shared.models.AppUser;
+import com.eli.urlshortener.urlshortener.infrastructure.mappers.UserRegistrationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRegistrationMapper userRegistrationMapper;
 
     public UserRegistrationResponseDto registerUser(UserRegistrationRequestDto registrationRequestDto){
         if (userRepository.existsByUsername(registrationRequestDto.username())){
@@ -27,6 +29,6 @@ public class UserService {
 
         userRepository.save(newUser);
 
-        return new UserRegistrationResponseDto(newUser.getUsername());
+        return userRegistrationMapper.toResponseDto(newUser);
     }
 }
