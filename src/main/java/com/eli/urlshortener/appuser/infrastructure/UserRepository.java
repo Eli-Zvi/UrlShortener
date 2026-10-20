@@ -1,6 +1,6 @@
-package com.eli.urlshortener.shared.infrastructure;
+package com.eli.urlshortener.appuser.infrastructure;
 
-import com.eli.urlshortener.shared.models.AppUser;
+import com.eli.urlshortener.appuser.models.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

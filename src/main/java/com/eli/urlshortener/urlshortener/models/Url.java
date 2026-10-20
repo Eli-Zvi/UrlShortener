@@ -1,7 +1,7 @@
 package com.eli.urlshortener.urlshortener.models;
 
 
-import com.eli.urlshortener.shared.models.AppUser;
+import com.eli.urlshortener.appuser.models.AppUser;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

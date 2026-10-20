@@ -1,4 +1,4 @@
-package com.eli.urlshortener.shared.DTOs;
+package com.eli.urlshortener.appuser.DTOs;
 
 import jakarta.validation.constraints.Size;
 
