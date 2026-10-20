@@ -1,6 +1,8 @@
 package com.eli.urlshortener.urlshortenertests.urlservice;
 
 import com.eli.urlshortener.shared.models.AppUser;
+import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
+import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.services.UrlService;
@@ -8,8 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,15 +25,18 @@ public class AddUrlTests {
     @Mock
     private UrlRepository urlRepository;
 
+    @Spy
+    private UrlMapper mapper;// = new UrlMapper();
+
     @InjectMocks
     private UrlService urlService;
 
-    private Url testUrl;
+    private AppUser appUser;
 
     @BeforeEach
     void setUp(){
-        testUrl = new Url();
-        testUrl.setOwner(new AppUser("test","test"));
+        appUser = new AppUser("test","test");
+        urlService = new UrlService(urlRepository, null, mapper);
     }
 
     @Test
@@ -40,15 +47,21 @@ public class AddUrlTests {
             AND: the url remains the same
             """)
     void normalizedUrlTest(){
-        String unnormalizedUrl = "https://test.com";
-        testUrl.setOriginalUrl(unnormalizedUrl);
+        String normalizedUrl = "https://test.com";
+        UrlCreateRequestDto urlCreateRequestDto = new UrlCreateRequestDto(normalizedUrl, null);
 
-        when(urlRepository.save(testUrl)).thenReturn(testUrl);
+        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> {
+            Url url = invocation.getArgument(0);
+            url.setId(1000L);
+            return url;
+        });
 
-        Url result = urlService.addUrl(testUrl);
+        urlService.addUrl(urlCreateRequestDto, appUser);
 
-        verify(urlRepository, times(1)).save(testUrl);
-        assertEquals(testUrl, result);
+        verify(urlRepository, times(1)).save(argThat(url ->
+                url.getOriginalUrl().equals(normalizedUrl) && url.getCreatedAt() != null
+                && url.getOwner().equals(appUser) && url.getLastClicked() == null && url.getDescription().isEmpty()
+        ));
     }
 
     @Test
@@ -59,15 +72,21 @@ public class AddUrlTests {
             AND: the url remains the same
             """)
     void normalizedUrlTest2(){
-        String unnormalizedUrl = "https://test.com";
-        testUrl.setOriginalUrl(unnormalizedUrl);
+        String normalizedUrl = "https://test.com";
+        UrlCreateRequestDto urlCreateRequestDto = new UrlCreateRequestDto(normalizedUrl, null);
 
-        when(urlRepository.save(testUrl)).thenReturn(testUrl);
+        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> {
+            Url url = invocation.getArgument(0);
+            url.setId(1000L);
+            return url;
+        });
 
-        Url result = urlService.addUrl(testUrl);
+        urlService.addUrl(urlCreateRequestDto, appUser);
 
-        verify(urlRepository, times(1)).save(testUrl);
-        assertEquals(testUrl, result);
+        verify(urlRepository, times(1)).save(argThat(url ->
+                url.getOriginalUrl().equals(normalizedUrl) && url.getCreatedAt() != null
+                        && url.getOwner().equals(appUser) && url.getLastClicked() == null && url.getDescription().isEmpty()
+        ));
     }
 
     @Test
@@ -78,14 +97,20 @@ public class AddUrlTests {
             AND: the url is normalized
             """)
     void unNormalizedUrlTest(){
-        String unnormalizedUrl = "test.com";
-        testUrl.setOriginalUrl(unnormalizedUrl);
+        String unNormalizedUrl = "test.com";
+        UrlCreateRequestDto urlCreateRequestDto = new UrlCreateRequestDto(unNormalizedUrl, null);
 
-        when(urlRepository.save(testUrl)).thenReturn(testUrl);
+        when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> {
+            Url url = invocation.getArgument(0);
+            url.setId(1000L);
+            return url;
+        });
 
-        Url result = urlService.addUrl(testUrl);
+        urlService.addUrl(urlCreateRequestDto, appUser);
 
-        verify(urlRepository, times(1)).save(testUrl);
-        assertEquals("https://" + unnormalizedUrl, result.getOriginalUrl());
+        verify(urlRepository, times(1)).save(argThat(url ->
+                url.getOriginalUrl().equals("https://" + unNormalizedUrl) && url.getCreatedAt() != null
+                        && url.getOwner().equals(appUser) && url.getLastClicked() == null && url.getDescription().isEmpty()
+        ));
     }
 }

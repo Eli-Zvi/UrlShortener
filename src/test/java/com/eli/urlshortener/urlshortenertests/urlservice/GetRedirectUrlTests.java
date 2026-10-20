@@ -4,6 +4,7 @@ import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.shared.utility.Base62;
 import com.eli.urlshortener.urlanalytics.infrastructure.mappers.UrlToRedirectionEventMapper;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
+import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
 import com.eli.urlshortener.shared.models.AppUser;
 import com.eli.urlshortener.urlshortener.models.Url;
@@ -34,7 +35,7 @@ public class GetRedirectUrlTests {
     private UrlService urlService;
 
     private Url testUrl;
-    private Base62 code;
+    private UrlLookUpRequestDto requestDto;
 
     @BeforeEach
     void setUp(){
@@ -42,7 +43,7 @@ public class GetRedirectUrlTests {
         testUrl.setOriginalUrl("testurl.com");
         testUrl.setOwner(new AppUser("test","test"));
         testUrl.setId(238328L);
-        code = Base62.encode(testUrl.getId());
+        requestDto = new UrlLookUpRequestDto(Base62.encode(testUrl.getId()));
     }
 
     @Test
@@ -55,7 +56,7 @@ public class GetRedirectUrlTests {
         //assumptions
         when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.of(testUrl));
         //method call
-        Url result = urlService.getRedirectUrl(code);
+        Url result = urlService.getRedirectUrl(requestDto);
 
         //assertions
 
@@ -76,6 +77,6 @@ public class GetRedirectUrlTests {
         when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.empty());
 
         //assertions
-        assertThrows(ShortCodeNotFoundException.class, () -> urlService.getRedirectUrl(code));
+        assertThrows(ShortCodeNotFoundException.class, () -> urlService.getRedirectUrl(requestDto));
     }
 }

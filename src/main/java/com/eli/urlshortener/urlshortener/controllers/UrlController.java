@@ -1,9 +1,11 @@
 package com.eli.urlshortener.urlshortener.controllers;
 
+import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
+import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.shared.models.AppUser;
 import com.eli.urlshortener.urlshortener.models.Url;
-import com.eli.urlshortener.urlshortener.DTOs.UrlResponse;
+import com.eli.urlshortener.urlshortener.DTOs.UrlResponseDto;
 import com.eli.urlshortener.urlshortener.services.UrlService;
 
 import com.eli.urlshortener.shared.utility.Base62;
@@ -28,8 +30,8 @@ public class UrlController {
     private final UrlMapper urlMapper;
 
     @GetMapping(value = "/redirect/{shortCode}") //TODO: make a service method to update last clicked
-    public ResponseEntity<Void> redirect(@PathVariable("shortCode") Base62 code){
-        Url redirectUrl = urlService.getRedirectUrl(code);
+    public ResponseEntity<Void> redirect(@PathVariable("shortCode") UrlLookUpRequestDto requestDto){
+        Url redirectUrl = urlService.getRedirectUrl(requestDto);
 
         return ResponseEntity
                     .status(HttpStatus.SEE_OTHER)
@@ -39,32 +41,27 @@ public class UrlController {
 
     @GetMapping("/urls")
     @ResponseStatus(HttpStatus.OK) //TODO: PAGING AND SORTING
-    public List<UrlResponse> getUrls(){
-        return urlService.getUrls()
-                .stream()
-                .map(urlMapper::mapUrlToResponse
-                ).toList();
+    public List<UrlResponseDto> getUrls(){
+        return urlService.getUrls();
     }
 
     @GetMapping("/urls/{shortCode}")
-    public UrlResponse getUrl(@PathVariable("shortCode") Base62 code){
-        Url url = urlService.getUrl(code);
+    public UrlResponseDto getUrl(@PathVariable("shortCode") UrlLookUpRequestDto requestDto){
+        Url url = urlService.getUrl(requestDto);
 
         return urlMapper.mapUrlToResponse(url);
     }
 
     @DeleteMapping("/urls/{shortCode}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUrl(@PathVariable("shortCode") Base62 code){
-        urlService.deleteUrl(code);
+    public void deleteUrl(@PathVariable("shortCode") UrlLookUpRequestDto requestDto){
+        urlService.deleteUrl(requestDto);
     }
 
     @PostMapping(value = "/", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public UrlResponse addUrl(@RequestBody @Valid Url url, @AuthenticationPrincipal UserDetails user){
-        url.setOwner((AppUser)user);
-        Url savedUrl = urlService.addUrl(url);
-
-        return urlMapper.mapUrlToResponse(savedUrl);
+    public UrlResponseDto addUrl(@RequestBody @Valid UrlCreateRequestDto createRequestDto,
+                                 @AuthenticationPrincipal UserDetails user){
+        return urlService.addUrl(createRequestDto, user);
     }
 }

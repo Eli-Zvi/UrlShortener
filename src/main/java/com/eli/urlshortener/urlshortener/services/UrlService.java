@@ -1,15 +1,21 @@
 package com.eli.urlshortener.urlshortener.services;
 
 import com.eli.urlshortener.shared.exceptions.ShortCodeNotFoundException;
+import com.eli.urlshortener.shared.models.AppUser;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventDto;
 import com.eli.urlshortener.urlanalytics.infrastructure.mappers.UrlToRedirectionEventMapper;
 import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
+import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
+import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
+import com.eli.urlshortener.urlshortener.DTOs.UrlResponseDto;
+import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
 import com.eli.urlshortener.shared.utility.Base62;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +30,11 @@ public class UrlService {
 
     private final UrlRepository urlRepository;
     private final AnalyticsService analyticsService;
+    private final UrlMapper urlMapper;
 
     @Transactional
-    public Url getRedirectUrl(Base62 code){
-        Url target = this.getUrl(code);
+    public Url getRedirectUrl(UrlLookUpRequestDto urlLookUpRequestDto){
+        Url target = this.getUrl(urlLookUpRequestDto);
 
         target.setLastClicked(Instant.now());
         urlRepository.save(target);
@@ -37,13 +44,16 @@ public class UrlService {
         return target;
     }
 
-    public Url addUrl(Url url){
-        url.setOriginalUrl(normalizeUrl(url.getOriginalUrl()));
+    public UrlResponseDto addUrl(UrlCreateRequestDto createRequestDto, UserDetails userDetails){
+        Url newUrl = urlMapper.mapRequestToUrl(createRequestDto);
+        newUrl.setOriginalUrl(normalizeUrl(newUrl.getOriginalUrl()));
+        newUrl.setOwner((AppUser)userDetails);
 
-        return urlRepository.save(url);
+        return urlMapper.mapUrlToResponse(urlRepository.save(newUrl));
     }
 
-    public void deleteUrl(Base62 code){
+    public void deleteUrl(UrlLookUpRequestDto urlLookUpRequestDto){
+        Base62 code = urlLookUpRequestDto.code();
         Long id = code.decode();
 
         if(!urlRepository.existsById(id)){
@@ -53,7 +63,8 @@ public class UrlService {
         urlRepository.deleteById(id);
     }
 
-    public Url getUrl(Base62 code){
+    public Url getUrl(UrlLookUpRequestDto urlLookUpRequestDto){
+        Base62 code = urlLookUpRequestDto.code();
         Long id = code.decode();
 
         Optional<Url> optional = urlRepository.findById(id);
@@ -62,8 +73,10 @@ public class UrlService {
                 new ShortCodeNotFoundException(String.format("Short code %s does not exist", code)));
     }
 
-    public List<Url> getUrls(){
-        return urlRepository.findAll();
+    public List<UrlResponseDto> getUrls(){
+        return urlRepository.findAll().stream()
+                .map(urlMapper::mapUrlToResponse
+                ).toList();
     }
 
     /*

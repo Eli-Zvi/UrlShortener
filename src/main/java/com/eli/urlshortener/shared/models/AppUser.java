@@ -30,10 +30,8 @@ public class AppUser implements UserDetails {
     private UUID id;
 
     @Column(unique = true, nullable = false)
-    @Size(min = 4, max = 16)
     private String username;
     @Column(nullable = false)
-    @Size(min = 8, max = 16)
     private String password;
 
     @Override

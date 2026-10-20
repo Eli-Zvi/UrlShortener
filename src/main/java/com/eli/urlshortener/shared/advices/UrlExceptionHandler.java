@@ -58,4 +58,9 @@ public class UrlExceptionHandler { //TODO: Capture validation related errors
     public ProblemDetail handleUsernameExistsException(UsernameAlreadyExistsException ex){
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
+
+    @ExceptionHandler({ArithmeticException.class, NumberFormatException.class})
+    public ProblemDetail handleBase62Error(RuntimeException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 }

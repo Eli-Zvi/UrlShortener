@@ -5,6 +5,13 @@ public record Base62(String base62Num) {
     private final static String base62Dic = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private final static int base = 62;
 
+    public Base62 {
+        if (base62Num.contains("-")) {
+            throw new ArithmeticException("Invalid input, can't encode negative numbers to Base62");
+        }
+        base62Num = base62Num.strip();
+    }
+
     /**
      * Static Constructor using a Long
      * @param num
