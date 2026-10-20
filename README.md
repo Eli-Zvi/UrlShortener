@@ -287,6 +287,10 @@ Run the test suite using:
 - **CI/CD:** Automate builds and tests through a continuous integration pipeline.
 - **Security:** Implement JWT-based tokens for authentication and authorization.
 
+## Future Features
+
+- **Browser Extensions:** Add an extension to popular browsers, to add new urls and save favorites. 
+
 ## Project Goals
 
 This project demonstrates practical experience with Java backend development, REST API design, relational database persistence, application security, layered architecture, analytics, and automated unit testing.
