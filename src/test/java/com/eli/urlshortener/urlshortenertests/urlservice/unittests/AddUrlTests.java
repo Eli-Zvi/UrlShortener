@@ -1,6 +1,6 @@
-package com.eli.urlshortener.urlshortenertests.urlservice;
+package com.eli.urlshortener.urlshortenertests.urlservice.unittests;
 
-import com.eli.urlshortener.appuser.models.AppUser;
+import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapperImpl;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;

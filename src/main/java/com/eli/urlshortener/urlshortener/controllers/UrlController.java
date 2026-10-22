@@ -11,16 +11,18 @@ import com.eli.urlshortener.util.Base62;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api", consumes = "application/json")
+@RequestMapping(path = "/api")
 @RequiredArgsConstructor
 @CrossOrigin //TODO: LIMIT CROSS ORIGINS URLS LATER
 public class UrlController {
@@ -29,7 +31,7 @@ public class UrlController {
     private final UrlMapper urlMapper;
 
     @GetMapping(value = "/redirect/{shortCode}")
-    public ResponseEntity<Void> redirect(@PathVariable("shortCode") UrlLookUpRequestDto requestDto){
+    public ResponseEntity<Void> redirect(@PathVariable("shortCode") @Valid UrlLookUpRequestDto requestDto){
         Url redirectUrl = urlService.getRedirectUrl(requestDto);
 
         return ResponseEntity
@@ -45,7 +47,7 @@ public class UrlController {
     }
 
     @GetMapping("/urls/{shortCode}")
-    public UrlResponseDto getUrl(@PathVariable("shortCode") UrlLookUpRequestDto requestDto){
+    public UrlResponseDto getUrl(@PathVariable("shortCode") @Valid UrlLookUpRequestDto requestDto){
         Url url = urlService.getUrl(requestDto);
 
         return urlMapper.mapUrlToResponse(url);
@@ -53,7 +55,7 @@ public class UrlController {
 
     @DeleteMapping("/urls/{shortCode}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUrl(@PathVariable("shortCode") UrlLookUpRequestDto requestDto){
+    public void deleteUrl(@PathVariable("shortCode") @Valid UrlLookUpRequestDto requestDto){
         urlService.deleteUrl(requestDto);
     }
 
@@ -62,5 +64,11 @@ public class UrlController {
     public UrlResponseDto addUrl(@RequestBody @Valid UrlCreateRequestDto createRequestDto,
                                  @AuthenticationPrincipal UserDetails user){
         return urlService.addUrl(createRequestDto, user);
+    }
+
+    @GetMapping(value = "/qrcode/{shortCode}", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<BufferedImage> generateQRCode(@PathVariable("shortCode") UrlLookUpRequestDto urlLookUpRequestDto)
+            throws Exception {
+        return ResponseEntity.ok().body(urlService.generateQRCodeImage(urlLookUpRequestDto));
     }
 }

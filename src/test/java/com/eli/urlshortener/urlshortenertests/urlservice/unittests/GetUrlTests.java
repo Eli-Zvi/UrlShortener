@@ -1,12 +1,12 @@
-package com.eli.urlshortener.urlshortenertests.urlservice;
+package com.eli.urlshortener.urlshortenertests.urlservice.unittests;
 
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
-import com.eli.urlshortener.appuser.models.AppUser;
-import com.eli.urlshortener.util.Base62;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
+import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.services.UrlService;
+import com.eli.urlshortener.util.Base62;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,11 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteUrlTests {
+public class GetUrlTests {
 
     @Mock
     private UrlRepository urlRepository;
@@ -41,29 +44,36 @@ public class DeleteUrlTests {
 
     @Test
     @DisplayName("""
-            GIVEN:short code that does exist in the database
-            WHEN:deleteUrl is called with the short code
-            THEN:repository deletes the url
+            GIVEN: shortcode that does not exist in the database
+            WHEN: getUrl is called with the shortcode
+            THEN: url is not returned
+            AND: an exception is thrown
             """)
-    void shortCodeExistsTest(){
-        when(urlRepository.existsById(testUrl.getId())).thenReturn(true);
+    void shortCodeDoesNotExistTest(){
+        //assumptions
+        when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.empty());
 
-        urlService.deleteUrl(requestDto);
-
-        verify(urlRepository, times(1)).deleteById(testUrl.getId());
+        //assertions and verifications
+        assertThrows(
+            ShortCodeNotFoundException.class, () -> urlService.getUrl(requestDto)
+        );
     }
 
     @Test
     @DisplayName("""
-            GIVEN:short code that does not exist in the database
-            WHEN:delete url is called with the short code
-            THEN:ShortCodeNotFoundException is thrown
-            AND:repository does not get a request to delete the url
+            GIVEN: shortcode that does exist in the database
+            WHEN: getUrl is called with the shortcode
+            THEN: url is returned
             """)
-    void shortCodeDoesNotExistTest(){
-        when(urlRepository.existsById(testUrl.getId())).thenReturn(false);
+    void shortCodeExistsTest(){
+        //assumptions
+        when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.of(testUrl));
 
-        assertThrows(ShortCodeNotFoundException.class, () -> urlService.deleteUrl(requestDto));
-        verify(urlRepository, times(0)).deleteById(testUrl.getId());
+        //method call
+        Url result = urlService.getUrl(requestDto);
+
+        //assertions and verifications
+        verify(urlRepository, times(1)).findById(testUrl.getId());
+        assertEquals(result, testUrl);
     }
 }
