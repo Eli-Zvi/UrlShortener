@@ -8,6 +8,7 @@ A RESTful URL shortening service built with Java and Spring Boot. The applicatio
 - **URL Management:** Retrieve URL details, list URLs, and delete shortened URLs.
 - **User Registration:** Register application users.
 - **URL Redirection:** Redirect visitors to the original destination associated with a short code.
+- **QR Code Generation:** Generate QR code images for existing shortened URLs using their short codes.
 - **Click Analytics:** Retrieve redirection events and total click counts for individual URLs.
 - **Visit Tracking:** Record redirection metadata, including timestamps, user agents, and referrers.
 - **Database Persistence:** Store application data in PostgreSQL using Spring Data JPA.
@@ -154,6 +155,18 @@ Example:
 `GET /api/redirect/abc123`
 
 The application resolves the short code, retrieves the original URL, and redirects the client. Redirection also provides the opportunity to record visit information for analytics.
+
+### QR Code Generation
+
+#### `GET /api/qrcode/{shortCode}`
+
+Generates a QR code image for an existing shortened URL identified by its short code.
+
+Example:
+
+`GET /api/qrcode/abc123`
+
+Returns a PNG image (image/png) containing a QR code that encodes the shortened URL. Scanning the QR code allows users to access the shortened URL and be redirected to its original destination.
 
 ### Analytics
 
