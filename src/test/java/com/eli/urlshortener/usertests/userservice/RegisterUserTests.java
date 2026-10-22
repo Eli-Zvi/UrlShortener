@@ -3,7 +3,7 @@ package com.eli.urlshortener.usertests.userservice;
 import com.eli.urlshortener.appuser.DTOs.UserRegistrationRequestDto;
 import com.eli.urlshortener.exceptions.UsernameAlreadyExistsException;
 import com.eli.urlshortener.appuser.infrastructure.repositories.UserRepository;
-import com.eli.urlshortener.appuser.models.AppUser;
+import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.appuser.services.UserService;
 import com.eli.urlshortener.appuser.infrastructure.mappers.UserRegistrationMapperImpl;
 import org.junit.jupiter.api.BeforeEach;

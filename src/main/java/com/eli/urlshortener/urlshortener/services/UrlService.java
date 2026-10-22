@@ -1,7 +1,7 @@
 package com.eli.urlshortener.urlshortener.services;
 
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
-import com.eli.urlshortener.appuser.models.AppUser;
+import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlResponseDto;
@@ -10,13 +10,20 @@ import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
 import com.eli.urlshortener.util.Base62;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -82,6 +89,20 @@ public class UrlService {
     Add https if http and https are not specified in the link to make redirection seamless
      */
     private String normalizeUrl(String originalUrl){
-        return originalUrl.startsWith("http") ? originalUrl : "https://" + originalUrl;
+        return originalUrl.startsWith("http") ? originalUrl : "http://" + originalUrl; //TODO: Change to https before deploying
+    }
+
+    @Value("${server.port}")
+    private String port;
+    @Value("${server.address}")
+    private String address;
+
+    public BufferedImage generateQRCodeImage(UrlLookUpRequestDto urlLookUpRequestDto) throws WriterException {
+        QRCodeWriter barcodeWriter = new QRCodeWriter();
+        String serverUrl = normalizeUrl(address + ":" + port + "/api/redirect/" + urlLookUpRequestDto.code().base62Num());
+        BitMatrix bitMatrix =
+                barcodeWriter.encode(serverUrl, BarcodeFormat.QR_CODE, 300, 300);
+        log.info(serverUrl);
+        return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }
 }

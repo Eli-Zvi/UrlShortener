@@ -1,12 +1,11 @@
-package com.eli.urlshortener.urlshortenertests.urlservice;
+package com.eli.urlshortener.urlshortenertests.urlservice.unittests;
 
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.urlshortener.UrlRedirectEvent;
 import com.eli.urlshortener.util.Base62;
-import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
-import com.eli.urlshortener.appuser.models.AppUser;
+import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.services.UrlService;
 import org.junit.jupiter.api.BeforeEach;

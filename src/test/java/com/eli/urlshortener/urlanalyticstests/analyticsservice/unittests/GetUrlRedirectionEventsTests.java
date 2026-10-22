@@ -1,4 +1,4 @@
-package com.eli.urlshortener.urlanalyticstests.analyticsservice;
+package com.eli.urlshortener.urlanalyticstests.analyticsservice.unittests;
 
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.util.Base62;

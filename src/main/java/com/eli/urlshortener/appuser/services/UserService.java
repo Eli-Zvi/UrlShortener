@@ -4,7 +4,7 @@ import com.eli.urlshortener.appuser.DTOs.UserRegistrationRequestDto;
 import com.eli.urlshortener.appuser.DTOs.UserRegistrationResponseDto;
 import com.eli.urlshortener.exceptions.UsernameAlreadyExistsException;
 import com.eli.urlshortener.appuser.infrastructure.repositories.UserRepository;
-import com.eli.urlshortener.appuser.models.AppUser;
+import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.appuser.infrastructure.mappers.UserRegistrationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

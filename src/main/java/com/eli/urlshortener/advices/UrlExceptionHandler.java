@@ -1,5 +1,6 @@
 package com.eli.urlshortener.advices;
 
+import com.eli.urlshortener.exceptions.IllegalShortCodeException;
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.exceptions.UrlAlreadyExistsException;
 import com.eli.urlshortener.exceptions.UsernameAlreadyExistsException;
@@ -59,8 +60,8 @@ public class UrlExceptionHandler { //TODO: Capture validation related errors
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
-    @ExceptionHandler({ArithmeticException.class, NumberFormatException.class})
-    public ProblemDetail handleBase62Error(RuntimeException ex){
+    @ExceptionHandler(IllegalShortCodeException.class)
+    public ProblemDetail handleBase62Error(IllegalShortCodeException ex){
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 }

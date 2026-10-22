@@ -1,4 +1,4 @@
-package com.eli.urlshortener.urlanalyticstests.analyticsservice;
+package com.eli.urlshortener.urlanalyticstests.analyticsservice.unittests;
 
 /**
  * Empty for now, just a simple repository call

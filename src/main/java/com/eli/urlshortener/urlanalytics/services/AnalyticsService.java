@@ -27,7 +27,7 @@ public class AnalyticsService {
         Base62 shortCode = requestDto.code();
         Long urlId = shortCode.decode();
 
-        if (this.analyticsExistsByUrlId(urlId)){
+        if (redirectionEventRepository.existsByUrlId(urlId)){
             return redirectionEventRepository.findAllByUrlId(urlId)
                     .stream()
                     .map(redirectionEventMapper::mapEntityToDto)
@@ -54,9 +54,5 @@ public class AnalyticsService {
         event.setUrlId(redirectEvent.urlId());
         event.setReferrer(redirectEvent.referrer());
         redirectionEventRepository.save(event);
-    }
-
-    private boolean analyticsExistsByUrlId(Long urlId){
-        return redirectionEventRepository.existsByUrlId(urlId);
     }
 }
