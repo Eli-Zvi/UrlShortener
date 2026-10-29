@@ -2,6 +2,8 @@ package com.eli.urlshortener.urlshortenertests.urlservice.unittests;
 
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
+import com.eli.urlshortener.urlshortener.UrlResponseDto;
+import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapperImpl;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
 import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.urlshortener.models.Url;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -26,6 +29,9 @@ public class GetUrlTests {
 
     @Mock
     private UrlRepository urlRepository;
+
+    @Spy
+    private UrlMapperImpl urlMapper;
 
     @InjectMocks
     private UrlService urlService;
@@ -70,10 +76,10 @@ public class GetUrlTests {
         when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.of(testUrl));
 
         //method call
-        Url result = urlService.getUrl(requestDto);
+        UrlResponseDto result = urlService.getUrl(requestDto);
 
         //assertions and verifications
         verify(urlRepository, times(1)).findById(testUrl.getId());
-        assertEquals(result, testUrl);
+        assertEquals(result, urlMapper.mapUrlToResponse(testUrl));
     }
 }
