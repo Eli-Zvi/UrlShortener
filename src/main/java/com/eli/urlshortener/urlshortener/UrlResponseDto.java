@@ -1,4 +1,4 @@
-package com.eli.urlshortener.urlshortener.DTOs;
+package com.eli.urlshortener.urlshortener;
 
 import com.eli.urlshortener.util.Base62;
 

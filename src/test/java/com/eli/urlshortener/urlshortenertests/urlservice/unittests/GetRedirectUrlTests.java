@@ -2,6 +2,9 @@ package com.eli.urlshortener.urlshortenertests.urlservice.unittests;
 
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.urlshortener.UrlRedirectEvent;
+import com.eli.urlshortener.urlshortener.UrlResponseDto;
+import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
+import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapperImpl;
 import com.eli.urlshortener.util.Base62;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
@@ -14,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -30,6 +34,9 @@ public class GetRedirectUrlTests {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Spy
+    private UrlMapperImpl urlMapper;
 
     @InjectMocks
     private UrlService urlService;
@@ -59,14 +66,14 @@ public class GetRedirectUrlTests {
         doNothing().when(eventPublisher).publishEvent(any(UrlRedirectEvent.class));
 
         //method call
-        Url result = urlService.getRedirectUrl(requestDto);
+        UrlResponseDto result = urlService.getRedirectUrl(requestDto);
 
         //assertions
 
         verify(urlRepository, times(1)).findById(testUrl.getId()); //check that getUrl executed successfully
 
-        assertNotNull(result.getLastClicked()); //check that lastClicked was updated
-        assertEquals(testUrl, result); //check that the testUrl with lastClicked updated is what was returned
+        assertNotNull(result.lastClicked()); //check that lastClicked was updated
+        assertEquals(urlMapper.mapUrlToResponse(testUrl), result); //check that the testUrl with lastClicked updated is what was returned
     }
 
     @Test

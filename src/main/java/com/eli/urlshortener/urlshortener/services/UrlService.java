@@ -4,7 +4,7 @@ import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
-import com.eli.urlshortener.urlshortener.DTOs.UrlResponseDto;
+import com.eli.urlshortener.urlshortener.UrlResponseDto;
 import com.eli.urlshortener.urlshortener.UrlRedirectEvent;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.models.Url;
@@ -18,7 +18,11 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +42,9 @@ public class UrlService {
     private final UrlMapper urlMapper;
 
     @Transactional
-    public Url getRedirectUrl(UrlLookUpRequestDto urlLookUpRequestDto){
-        Url target = this.getUrl(urlLookUpRequestDto);
+    @Cacheable(value = "REDIRECT_CACHE", key = "#urlLookUpRequestDto.code()")
+    public UrlResponseDto getRedirectUrl(UrlLookUpRequestDto urlLookUpRequestDto){
+        Url target = this.fetchUrl(urlLookUpRequestDto.code());
 
         target.setLastClicked(Instant.now());
         urlRepository.save(target);
@@ -47,9 +52,10 @@ public class UrlService {
         eventPublisher.publishEvent(new UrlRedirectEvent(target.getId(), target.getOwner().getUsername(),
                 target.getLastClicked(), target.getCreatedAt(), "temp", "temp"));
 
-        return target;
+        return urlMapper.mapUrlToResponse(target);
     }
 
+    @CachePut(value= "URL_CACHE", key="#result.shortCode()") //add the new Url to cache
     public UrlResponseDto addUrl(UrlCreateRequestDto createRequestDto, UserDetails userDetails){
         Url newUrl = urlMapper.mapRequestToUrl(createRequestDto);
         newUrl.setOriginalUrl(normalizeUrl(newUrl.getOriginalUrl()));
@@ -58,6 +64,7 @@ public class UrlService {
         return urlMapper.mapUrlToResponse(urlRepository.save(newUrl));
     }
 
+    @CacheEvict(value = {"URL_CACHE", "REDIRECT_CACHE"}, key = "#urlLookUpRequestDto.code()") //evict deleted URL from url cache and redirect cache
     public void deleteUrl(UrlLookUpRequestDto urlLookUpRequestDto){
         Base62 code = urlLookUpRequestDto.code();
         Long id = code.decode();
@@ -69,20 +76,25 @@ public class UrlService {
         urlRepository.deleteById(id);
     }
 
-    public Url getUrl(UrlLookUpRequestDto urlLookUpRequestDto){
-        Base62 code = urlLookUpRequestDto.code();
-        Long id = code.decode();
-
-        Optional<Url> optional = urlRepository.findById(id);
-
-        return optional.orElseThrow(() ->
-                new ShortCodeNotFoundException(String.format("Short code %s does not exist", code)));
+    @Cacheable(value = "URL_CACHE", key = "#urlLookUpRequestDto.code()")
+    //Look for a cache hit and skips method if successful, otherwise add the fetched URL to cache
+    public UrlResponseDto getUrl(UrlLookUpRequestDto urlLookUpRequestDto){
+        return urlMapper.mapUrlToResponse(fetchUrl(urlLookUpRequestDto.code()));
     }
 
     public List<UrlResponseDto> getUrls(){
         return urlRepository.findAll().stream()
-                .map(urlMapper::mapUrlToResponse
-                ).toList();
+                .map(urlMapper::mapUrlToResponse)
+                .toList();
+    }
+
+    private Url fetchUrl(Base62 shortCode){
+        Long id = shortCode.decode();
+
+        Optional<Url> optional = urlRepository.findById(id);
+
+        return optional.orElseThrow(() ->
+                new ShortCodeNotFoundException(String.format("Short code %s does not exist", shortCode)));
     }
 
     /*
@@ -96,7 +108,7 @@ public class UrlService {
     private String port;
     @Value("${server.address}")
     private String address;
-
+    //TODO: ADD URL GENERATION SERVICE WITH 2 DIFFERENT SERVICES, 1 TO MAKE ANY URL A USER WANTS THROUGH USER BODY AND ANOTHER TO MAKE BASED ON SHORTCODE
     public BufferedImage generateQRCodeImage(UrlLookUpRequestDto urlLookUpRequestDto) throws WriterException {
         QRCodeWriter barcodeWriter = new QRCodeWriter();
         String serverUrl = normalizeUrl(address + ":" + port + "/api/redirect/" + urlLookUpRequestDto.code().base62Num());

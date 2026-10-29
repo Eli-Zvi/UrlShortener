@@ -2,12 +2,10 @@ package com.eli.urlshortener.urlshortener.controllers;
 
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
-import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.models.Url;
-import com.eli.urlshortener.urlshortener.DTOs.UrlResponseDto;
+import com.eli.urlshortener.urlshortener.UrlResponseDto;
 import com.eli.urlshortener.urlshortener.services.UrlService;
 
-import com.eli.urlshortener.util.Base62;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,15 +26,14 @@ import java.util.List;
 public class UrlController {
 
     private final UrlService urlService;
-    private final UrlMapper urlMapper;
 
     @GetMapping(value = "/redirect/{shortCode}")
     public ResponseEntity<Void> redirect(@PathVariable("shortCode") @Valid UrlLookUpRequestDto requestDto){
-        Url redirectUrl = urlService.getRedirectUrl(requestDto);
+        UrlResponseDto redirectUrl = urlService.getRedirectUrl(requestDto);
 
         return ResponseEntity
                     .status(HttpStatus.SEE_OTHER)
-                    .location(URI.create(redirectUrl.getOriginalUrl()))
+                    .location(URI.create(redirectUrl.originalUrl()))
                     .build();
     }
 
@@ -48,9 +45,7 @@ public class UrlController {
 
     @GetMapping("/urls/{shortCode}")
     public UrlResponseDto getUrl(@PathVariable("shortCode") @Valid UrlLookUpRequestDto requestDto){
-        Url url = urlService.getUrl(requestDto);
-
-        return urlMapper.mapUrlToResponse(url);
+        return urlService.getUrl(requestDto);
     }
 
     @DeleteMapping("/urls/{shortCode}")

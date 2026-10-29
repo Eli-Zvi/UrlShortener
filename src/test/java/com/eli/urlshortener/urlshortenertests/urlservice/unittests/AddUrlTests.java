@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,7 +24,7 @@ public class AddUrlTests {
     private UrlRepository urlRepository;
 
     @Spy
-    private UrlMapperImpl mapper;// = new UrlMapper();
+    private UrlMapperImpl mapper;
 
     @InjectMocks
     private UrlService urlService;
@@ -35,7 +34,6 @@ public class AddUrlTests {
     @BeforeEach
     void setUp(){
         appUser = new AppUser("test","test");
-        urlService = new UrlService(urlRepository, null, mapper);
     }
 
     @Test
@@ -108,7 +106,7 @@ public class AddUrlTests {
         urlService.addUrl(urlCreateRequestDto, appUser);
 
         verify(urlRepository, times(1)).save(argThat(url ->
-                url.getOriginalUrl().equals("https://" + unNormalizedUrl) && url.getCreatedAt() != null
+                url.getOriginalUrl().equals("http://" + unNormalizedUrl) && url.getCreatedAt() != null
                         && url.getOwner().equals(appUser) && url.getLastClicked() == null && url.getDescription().isEmpty()
         ));
     }
