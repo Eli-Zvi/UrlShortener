@@ -21,13 +21,17 @@ A RESTful URL shortening service built with Java and Spring Boot. The applicatio
 | --------------- | ---------------------------------------------- |
 | Java            | Primary programming language                   |
 | Spring Boot     | Application framework                          |
+| Spring Modulith | Structural and Architectural Framework         |
 | Spring MVC      | REST API development                           |
 | Spring Data JPA | Database persistence                           |
+| Spring Data Redis | URL Caching                                  |
 | Spring Security | HTTP security and endpoint access control      |
 | PostgreSQL      | Relational database                            |
 | JUnit 5         | Unit testing                                   |
 | Mockito         | Mocking dependencies during testing            |
-| Maven           | Build and dependency management, if applicable |
+| Docker          | Containerization                               |
+| Maven           | Build and dependency management                |
+| Google ZXing    | Barcode encoding                               |
 
 ## Architecture
 
@@ -44,7 +48,10 @@ Service Layer
   |
   v
 Repository Layer
-  |
+  | When Applicable(Url CRUD)
+  v
+Redis Cache
+  | If Cache Miss
   v
 PostgreSQL
 ```
@@ -290,7 +297,6 @@ Run the test suite using:
 ## Future Improvements
 
 - **Microservice Architecture:** Evolve the current semi-modular monolith into independently deployable services with clearly defined responsibilities and communication boundaries.
-- **Module Decoupling:** Reduce cross-boundary dependencies between user management, URL management, and analytics before extracting services.
 - **Docker:** Containerize the application and PostgreSQL database to simplify development and deployment.
 - **Integration Testing:** Introduce Testcontainers to validate repository and database interactions against PostgreSQL.
 - **Caching:** Add Redis caching to reduce database queries during URL redirection.
@@ -306,4 +312,4 @@ Run the test suite using:
 
 ## Project Goals
 
-This project demonstrates practical experience with Java backend development, REST API design, relational database persistence, application security, layered architecture, analytics, and automated unit testing.
+This project's goal is to demonstrate practical experience with Java backend development, REST API design, relational database persistence, application security, layered architecture, analytics, and automated unit testing.
