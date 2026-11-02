@@ -11,9 +11,18 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 import java.time.Duration;
 
+/**
+ * The configuration class for redis
+ * @author Ilay Zvi
+ */
 @Configuration
 public class RedisConfig {
 
+    /**
+     * Configures and builds a new RedisCacheManager
+     * @param connectionFactory
+     * @return
+     */
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory){
         RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration

@@ -1,6 +1,7 @@
 package com.eli.urlshortener.appuser;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
@@ -12,6 +13,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * This class represents a user in the application
+ * TODO: consider decoupling from UserDetails(Security)
+ * @author Ilay Zvi
+ */
 @Entity
 @Data
 @RequiredArgsConstructor
@@ -27,8 +33,10 @@ public class AppUser implements UserDetails {
     private UUID id;
 
     @Column(unique = true, nullable = false)
+    @Size(min = 4, max = 16)
     private String username;
     @Column(nullable = false)
+    @Size(min=8, max=16)
     private String password;
 
     @Override

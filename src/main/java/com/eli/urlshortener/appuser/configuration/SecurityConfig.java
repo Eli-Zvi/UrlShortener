@@ -14,15 +14,28 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * The main security config for the application
+ * @author Ilay Zvi
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Initializes a PasswordEncoder bean
+     * @return a new PasswordEncoder instance
+     */
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * The default security chain for the application
+     * @param httpSecurity - the httpsecurity context
+     * @return a configured SecurityFilterChain(DefaultSecurityFilterChain)
+     */
     @Bean
     public SecurityFilterChain defaultSecurityChain(HttpSecurity httpSecurity){
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
@@ -35,7 +48,7 @@ public class SecurityConfig {
            authorize.anyRequest().denyAll();
         });
 
-        httpSecurity.httpBasic(Customizer.withDefaults());
+        httpSecurity.httpBasic(Customizer.withDefaults()); //set up basic http, to be changed to JWT
 
         httpSecurity.headers(headers -> headers
                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
@@ -44,8 +57,14 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
+    /**
+     * Initializes the UserDetailsService bean for the security config
+     * @param userRepository the user repository in charge of authentication
+     * @return a new UserDetailsService instance
+     */
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository){
+        //creates a new UserDetailsService using a lambda for the loadByUsername method
         return (username) ->
             userRepository.getAppUserByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found" + username));

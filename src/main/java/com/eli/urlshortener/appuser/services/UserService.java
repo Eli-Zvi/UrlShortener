@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * User Service for user credential operations
+ * @author Ilay Zvi
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -18,6 +22,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRegistrationMapper userRegistrationMapper;
 
+    /**
+     * Processes user registration requests
+     * @param registrationRequestDto - a Registration Request
+     * @return a UserRegistrationResponseDto
+     * @throws UsernameAlreadyExistsException if the user exists
+     */
     public UserRegistrationResponseDto registerUser(UserRegistrationRequestDto registrationRequestDto){
         if (userRepository.existsByUsername(registrationRequestDto.username())){
             throw new UsernameAlreadyExistsException(String.format("Username %s already exists",
