@@ -3,7 +3,11 @@ package com.eli.urlshortener.util;
 import com.eli.urlshortener.exceptions.IllegalShortCodeException;
 import lombok.extern.slf4j.Slf4j;
 
-
+/**
+ * A class representing a Base62 number
+ * @param base62Num - a String representation of a base62 number
+ * @author Ilay Zvi
+ */
 @Slf4j
 public record Base62(String base62Num) {
 
@@ -25,6 +29,10 @@ public record Base62(String base62Num) {
             throw new ArithmeticException("Invalid input, can't encode negative numbers to Base62");
         }
 
+        if(num == 0){
+            return new Base62("0");
+        }
+
         StringBuilder encodedNum = new StringBuilder();
         int counter = 1;
 
@@ -43,7 +51,7 @@ public record Base62(String base62Num) {
     }
 
     /**
-     * Decodes the object's Base62 number to a Long
+     * Decodes the object's Base62 number to a Long(base10)
      * @return a decoded Base62 number in the form of base 10(Long)
      */
     public Long decode(){

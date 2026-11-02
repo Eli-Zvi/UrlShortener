@@ -6,11 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RedirectionEventRepository extends JpaRepository<RedirectionEvent, Long> {
-    List<RedirectionEvent> findAllByUrlId(Long urlId);
+    List<RedirectionEvent> findAllByShortCode(String shortCode);
 
-    boolean existsByUrlId(Long urlId);
+    boolean existsByShortCode(String shortCode);
 
-    Long countAllByUrlId(Long urlId);
-
-    Long urlId(Long urlId);
+    Long countAllByShortCode(String shortCode);
 }

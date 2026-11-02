@@ -7,6 +7,10 @@ import org.springframework.http.converter.HttpMessageConverter;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * This class configures the HttpMessageConverter for the urlshortener application
+ * @author Ilay Zvi
+ */
 @Configuration
 public class MessageConvertConfig {
     @Bean

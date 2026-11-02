@@ -4,9 +4,11 @@ package com.eli.urlshortener.urlanalytics.infrastructure.mappers;
 import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventResponseDto;
 import com.eli.urlshortener.urlanalytics.models.RedirectionEvent;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.springframework.stereotype.Service;
 
+/**
+ * Interface implemented by MapStruct dependency to map an RedirectionEvent to DTOs
+ * @author Ilay Zvi
+ */
 @Mapper(componentModel = "spring")
 public interface RedirectionEventMapper {
 
@@ -14,7 +16,7 @@ public interface RedirectionEventMapper {
     //RedirectionEvent mapDtoToEntity(RedirectionEventResponseDto eventDto);
     /*{
         RedirectionEvent entity = new RedirectionEvent();
-        entity.setUrlId(eventDto.urlId());
+        entity.setUrlId(eventDto.shortCode());
         entity.setReferrer(eventDto.referrer());
         entity.setUserAgent(eventDto.userAgent());
         entity.setLastClicked(eventDto.lastClicked());
@@ -24,7 +26,6 @@ public interface RedirectionEventMapper {
         return entity;
     } */
 
-    @Mapping(source = "ownerUsername", target = "username")
     RedirectionEventResponseDto mapEntityToDto(RedirectionEvent event);
     /*{
         return new RedirectionEventResponseDto(event.getUrlId(), event.getOwnerUsername(), event.getLastClicked(),
