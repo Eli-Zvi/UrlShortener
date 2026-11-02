@@ -139,7 +139,18 @@ Example:
 
 `GET /api/urls/abc123`
 
-Returns the URL's details, including its original destination, short code, description, and timestamps.
+```json
+{
+  "username": "string",
+  "originalUrl": "string",
+  "shortCode": {
+    "base62Num": "string"
+  },
+  "description": "string",
+  "lastClicked": "2026-11-02T03:37:58.287Z",
+  "createdAt": "2026-11-02T03:37:58.287Z"
+}
+```
 
 #### `DELETE /api/urls/{shortCode}`
 
@@ -185,15 +196,18 @@ Example:
 
 `GET /api/analytics/abc123`
 
-Each event can include:
-
-- URL identifier
-- Owner username
-- Url creation timestamp
-- Last-clicked timestamp
-- User agent
-- Referrer
-
+```json
+[
+  {
+    "shortCode": "string",
+    "redirectedUser": "string",
+    "eventTimeStamp": "2026-11-02T03:43:21.934Z",
+    "createdAt": "2026-11-02T03:43:21.934Z",
+    "userAgent": "string",
+    "referrer": "string"
+  }
+]
+```
 #### `GET /api/analytics/totalClicks/{shortCode}`
 
 Retrieves the total number of recorded clicks for a shortened URL.
