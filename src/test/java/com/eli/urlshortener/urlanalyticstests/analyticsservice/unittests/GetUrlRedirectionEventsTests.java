@@ -36,11 +36,11 @@ public class GetUrlRedirectionEventsTests {
     private AnalyticsService analyticsService;
 
     private RedirectionEventRequestDto requestDto;
-    private Long urlId;
+    private String shortCode;
 
     @BeforeEach
     void setUp(){
-        urlId = 238328L;
+        shortCode = Base62.encode(238328L).base62Num();
         requestDto = new RedirectionEventRequestDto(Base62.encode(238328L));
     }
 
@@ -51,7 +51,7 @@ public class GetUrlRedirectionEventsTests {
             THEN: a ShortCodeNotFoundException is thrown
             """)
     void noAnalyticsExistTest(){
-        when(redirectionEventRepository.existsByUrlId(urlId)).thenReturn(false);
+        when(redirectionEventRepository.existsByShortCode(shortCode)).thenReturn(false);
 
         assertThrows(ShortCodeNotFoundException.class, () -> analyticsService.getUrlRedirectionEvents(requestDto));
     }
@@ -64,12 +64,12 @@ public class GetUrlRedirectionEventsTests {
             """)
     void analyticsExistTest(){
         List<RedirectionEventResponseDto> expected = new ArrayList<>();
-        when(redirectionEventRepository.existsByUrlId(urlId)).thenReturn(true);
-        when(redirectionEventRepository.findAllByUrlId(urlId)).thenReturn(List.of());
+        when(redirectionEventRepository.existsByShortCode(shortCode)).thenReturn(true);
+        when(redirectionEventRepository.findAllByShortCode(shortCode)).thenReturn(List.of());
 
         List<RedirectionEventResponseDto> result = analyticsService.getUrlRedirectionEvents(requestDto);
 
-        verify(redirectionEventRepository, times(1)).findAllByUrlId(urlId);
+        verify(redirectionEventRepository, times(1)).findAllByShortCode(shortCode);
         assertEquals(expected, result);
     }
 }

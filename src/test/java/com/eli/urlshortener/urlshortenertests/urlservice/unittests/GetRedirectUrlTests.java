@@ -3,7 +3,6 @@ package com.eli.urlshortener.urlshortenertests.urlservice.unittests;
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.urlshortener.UrlRedirectEvent;
 import com.eli.urlshortener.urlshortener.UrlResponseDto;
-import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapperImpl;
 import com.eli.urlshortener.util.Base62;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
@@ -11,6 +10,7 @@ import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlReposito
 import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.services.UrlService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +34,9 @@ public class GetRedirectUrlTests {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @Spy
     private UrlMapperImpl urlMapper;
