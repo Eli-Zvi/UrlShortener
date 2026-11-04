@@ -47,6 +47,16 @@ public class UrlController {
                     .build();
     }
 
+    @GetMapping(value = "/secure/redirect/{shortCode}")
+    public ResponseEntity<Void> secureRedirect(@PathVariable("shortCode") @Valid UrlLookUpRequestDto requestDto){
+        UrlResponseDto redirectUrl = urlService.secureRedirection(requestDto);
+
+        return ResponseEntity
+                .status(HttpStatus.SEE_OTHER)
+                .location(URI.create(redirectUrl.originalUrl()))
+                .build();
+    }
+
     /**
      * An API endpoint to retrieve a list of urls with the information relevant to them
      * for more information {@link com.eli.urlshortener.urlshortener.UrlResponseDto}

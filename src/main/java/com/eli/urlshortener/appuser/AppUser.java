@@ -36,7 +36,6 @@ public class AppUser implements UserDetails {
     @Size(min = 4, max = 16)
     private String username;
     @Column(nullable = false)
-    @Size(min=8, max=16)
     private String password;
 
     @Override

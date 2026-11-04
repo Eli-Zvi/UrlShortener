@@ -17,6 +17,7 @@ public class SafeBrowsingClientTest {
     @Test
     void test1(){
         assertNull(safeBrowsingClient.findThreats("https://youtube.com").matches());
+
         assertEquals(ThreatOptions.ThreatType.MALWARE,
                 safeBrowsingClient.
                         findThreats("https://testsafebrowsing.appspot.com/s/malware.html")

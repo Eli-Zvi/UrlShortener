@@ -1,9 +1,6 @@
 package com.eli.urlshortener.advices;
 
-import com.eli.urlshortener.exceptions.IllegalShortCodeException;
-import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
-import com.eli.urlshortener.exceptions.UrlAlreadyExistsException;
-import com.eli.urlshortener.exceptions.UsernameAlreadyExistsException;
+import com.eli.urlshortener.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.BindingResult;
@@ -85,5 +82,10 @@ public class UrlExceptionHandler {
                 return ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
             }
         }
+    }
+
+    @ExceptionHandler(UnsafeUrlException.class)
+    public ProblemDetail handleUnsafeUrl(UnsafeUrlException ex){
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 }

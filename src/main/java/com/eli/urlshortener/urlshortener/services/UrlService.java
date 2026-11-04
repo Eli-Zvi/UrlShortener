@@ -2,9 +2,12 @@ package com.eli.urlshortener.urlshortener.services;
 
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.appuser.AppUser;
+import com.eli.urlshortener.exceptions.UnsafeUrlException;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.UrlResponseDto;
+import com.eli.urlshortener.urlshortener.googlesafebrowsing.SafeBrowsingClient;
+import com.eli.urlshortener.urlshortener.googlesafebrowsing.ThreatMatchesResponse;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
@@ -44,9 +47,35 @@ import java.util.Optional;
 public class UrlService {
 
     private final UrlRepository urlRepository;
-    private final ApplicationEventPublisher eventPublisher;
     private final UrlMapper urlMapper;
+
+    private final SafeBrowsingClient safeBrowsingClient;
+    private final ApplicationEventPublisher eventPublisher;
+
     private final HttpServletRequest httpServletRequest;
+
+
+    @Transactional
+    // TODO: find a way to cache it while still publishing a redirection event
+    //  @Cacheable(value = "REDIRECT_CACHE", key = "#urlLookUpRequestDto.code()")
+    public UrlResponseDto getRedirectUrl(UrlLookUpRequestDto urlLookUpRequestDto){
+        Url redirectUrl = this.fetchUrl(urlLookUpRequestDto.code());
+        return redirect(redirectUrl);
+    }
+
+    @Transactional
+    public UrlResponseDto secureRedirection(UrlLookUpRequestDto urlLookUpRequestDto){
+        Url redirectUrl = this.fetchUrl(urlLookUpRequestDto.code());
+        ThreatMatchesResponse response = safeBrowsingClient.findThreats(redirectUrl.getOriginalUrl());
+
+        if(response.matches() != null){
+            throw new UnsafeUrlException(
+                    String.format("The given shortcode: %s is unsafe. Google's Safe API has detected the following threat: %s",
+                    urlLookUpRequestDto.code(), response.matches().getFirst().threatType()
+            ));
+        }
+        return this.redirect(redirectUrl);
+    }
 
     /**
      * Retrieves, updates, and publishes a Url
@@ -55,18 +84,13 @@ public class UrlService {
      * Retrieves redirected user, referrer and user agent
      * Saves the updated information
      * Publishes an event including the event details(Url, and the information listed above)
-     * @param urlLookUpRequestDto - a request dto including a shortcode
+     * @param redirectUrl a Url to redirect to
      * @return a {@code UrlResponseDto} including information about the redirection {@code Url}
      */
-    @Transactional
-    // TODO: find a way to cache it while still publishing a redirection event
-    //  @Cacheable(value = "REDIRECT_CACHE", key = "#urlLookUpRequestDto.code()")
-    public UrlResponseDto getRedirectUrl(UrlLookUpRequestDto urlLookUpRequestDto){
-        Url redirectUrl = this.fetchUrl(urlLookUpRequestDto.code());
-
+    private UrlResponseDto redirect(Url redirectUrl){
         redirectUrl.setLastClicked(Instant.now());
 
-        String redirectedUser = getRedirectedUser();
+        String redirectedUser = this.getRedirectedUser();
 
         String referrer = this.getReferrer();
 
@@ -96,7 +120,7 @@ public class UrlService {
 
     /**
      * Deletes a Url with the given shortCode
-     * @param urlLookUpRequestDto - a request dto including a shortcode
+     * @param urlLookUpRequestDto a request dto including a shortcode
      * @throws ShortCodeNotFoundException if a url with the given shortCode does not exist
      */
     //TODO: Add authentication that the user trying to delete a Url is the one that created it
