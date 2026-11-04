@@ -1,32 +1,15 @@
-package com.eli.urlshortener.urlshortener.DTOs;
+package com.eli.urlshortener.urlshortener.googlesafebrowsing;
 
-import java.util.List;
+public class ThreatOptions {
 
-/**
- * This class represents a payload for the Google threatMatches.find Safe Browsing endpoint
- * <a href="https://developers.google.com/safe-browsing/reference/rest/v4/threatMatches/find#request-body">Request Body of endpoint</a>
- * @param client - the client portion of the payload
- * @param threatInfo - the threat info portion of the payload
- */
-public record ThreatMatchesPayload(Client client,
-                                   ThreatInfo threatInfo) {
-
-    public record Client(String clientId,
-                         String clientVersion){
-    }
-
-    public record ThreatInfo(List<ThreatTypes> threatTypes,
-                             List<PlatformTypes> platformTypes,
-                             List<ThreatEntryType> threatEntryTypes,
-                             List<String> threatEntries
-                             ){
+    public record ThreatEntry(String url){
     }
 
     /**
      * Represents a Google Safe Browsing ThreatType Enum
      * <a href="https://developers.google.com/safe-browsing/v4/reference/rest/v4/ThreatType">Reference</a>
      */
-    public enum ThreatTypes{
+    public enum ThreatType {
         MALWARE("MALWARE"),
         SOCIAL_ENGINEERING("SOCIAL_ENGINEERING"),
         UNWANTED_SOFTWARE("UNWANTED_SOFTWARE"),
@@ -35,7 +18,7 @@ public record ThreatMatchesPayload(Client client,
 
         public final String threat;
 
-        ThreatTypes(String threat){
+        ThreatType(String threat){
             this.threat = threat;
         }
     }
@@ -44,12 +27,12 @@ public record ThreatMatchesPayload(Client client,
      * Represents a Google Safe Browsing PlatformTypes Enum
      * <a href="https://developers.google.com/safe-browsing/reference/rest/v4/PlatformType">Reference</a>
      */
-    public enum PlatformTypes{
+    public enum PlatformType {
         WINDOWS("WINDOWS"),
         LINUX("LINUX"),
-        ANY("ANY_PLATFORM"),
+        ANY_PLATFORM("ANY_PLATFORM"),
         CHROME("CHROME"),
-        ALL("ALL_PLATFORMS"),
+        ALL_PLATFORMS("ALL_PLATFORMS"),
         IOS("IOS"),
         OSX("OSX"),
         ANDROID("ANDROID"),
@@ -57,7 +40,7 @@ public record ThreatMatchesPayload(Client client,
 
         public final String platform;
 
-        PlatformTypes(String platform){
+        PlatformType(String platform){
             this.platform = platform;
         }
     }

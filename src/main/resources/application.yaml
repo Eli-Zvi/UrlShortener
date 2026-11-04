@@ -3,7 +3,8 @@ spring:
     import:
       - optional:file:.env[.properties]
   application:
-    name: UrlShortener
+    name: URL_SHORTENER
+    version: "@project.version@"
   h2:
     console:
       enabled: true
