@@ -1,18 +1,21 @@
 package com.eli.urlshortener.urlshortener.googlesafebrowsing;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import tools.jackson.databind.ObjectMapper;
 
 import com.eli.urlshortener.urlshortener.googlesafebrowsing.ThreatOptions.*;
 
 import java.net.URI;
 import java.util.List;
+
+/**
+ * Safe Browsing Contract implementation
+ *
+ */
 
 @Slf4j
 @Service
@@ -25,19 +28,22 @@ public class SafeBrowsingClientImpl implements SafeBrowsingClient {
     @Value("${spring.application.version}")
     private String VERSION;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private final URI SAFE_BROWSING_URI = URI.create("https://safebrowsing.googleapis.com/v4/threatMatches:find");
     private final RestClient restClient = RestClient.create();
 
-
+    /**
+     * Crafts a request and sends to google's safe browsing threatMatches.find API.
+     * Retrieves the response and returns it.
+     * @param url a url to check
+     * @return the response from the server
+     */
     @Override
     public ThreatMatchesResponse findThreats(String url) {
         final URI uri = UriComponentsBuilder
                 .fromUri(SAFE_BROWSING_URI)
                 .queryParam("key", API_KEY)
-                .build().toUri();
+                .build()
+                .toUri();
 
         ThreatMatchesRequest.Client client = new ThreatMatchesRequest.Client(CLIENT_NAME, VERSION);
         ThreatMatchesRequest.ThreatInfo threatInfo = new ThreatMatchesRequest.ThreatInfo(
@@ -51,11 +57,6 @@ public class SafeBrowsingClientImpl implements SafeBrowsingClient {
                 )
         );
 
-        //log.info(new ThreatMatchesPayload(client, threatInfo).toString());
-        log.info(API_KEY);
-        log.info(uri.toString());
-        log.info(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(new ThreatMatchesRequest(client, threatInfo)));
-
         ThreatMatchesResponse apiResult = restClient.post()
                 .uri(uri)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -65,7 +66,6 @@ public class SafeBrowsingClientImpl implements SafeBrowsingClient {
                 .retrieve()
                 .body(ThreatMatchesResponse.class);
 
-        log.info("API_RESULT:");
         log.info(String.valueOf(apiResult));
 
         return apiResult;
