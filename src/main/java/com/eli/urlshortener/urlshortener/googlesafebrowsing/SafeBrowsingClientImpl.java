@@ -28,14 +28,23 @@ public class SafeBrowsingClientImpl implements SafeBrowsingClient {
     @Value("${spring.application.version}")
     private String VERSION;
 
+    private final RestClient restClient;
     private final URI SAFE_BROWSING_URI = URI.create("https://safebrowsing.googleapis.com/v4/threatMatches:find");
-    private final RestClient restClient = RestClient.create();
+
+    /**
+     * Use spring autoconfiguration for RestClient
+     * @param builder autoconfigured RestClient.Builder
+     */
+    public SafeBrowsingClientImpl(RestClient.Builder builder){
+        restClient = builder.build();
+    }
 
     /**
      * Crafts a request and sends to google's safe browsing threatMatches.find API.
      * Retrieves the response and returns it.
      * @param url a url to check
      * @return the response from the server
+     * TODO: Add caching using the caching information given by Google's Safe Browsing
      */
     @Override
     public ThreatMatchesResponse findThreats(String url) {
