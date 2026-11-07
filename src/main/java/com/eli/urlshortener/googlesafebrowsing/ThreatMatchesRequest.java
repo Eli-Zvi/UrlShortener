@@ -1,4 +1,4 @@
-package com.eli.urlshortener.urlshortener.googlesafebrowsing;
+package com.eli.urlshortener.googlesafebrowsing;
 import java.util.List;
 
 /**

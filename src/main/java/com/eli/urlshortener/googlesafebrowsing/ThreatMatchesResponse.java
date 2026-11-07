@@ -1,5 +1,5 @@
-package com.eli.urlshortener.urlshortener.googlesafebrowsing;
-import com.eli.urlshortener.urlshortener.googlesafebrowsing.ThreatOptions.*;
+package com.eli.urlshortener.googlesafebrowsing;
+import com.eli.urlshortener.googlesafebrowsing.ThreatOptions.*;
 
 import java.util.List;
 
