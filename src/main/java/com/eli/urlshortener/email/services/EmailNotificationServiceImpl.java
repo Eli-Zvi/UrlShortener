@@ -26,7 +26,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
     @Value("${spring.mail.username}")
     private String username;
 
-    private final String homePageUrl = "https://localhost:8080";
+    private final String HOME_PAGE_URL = "https://localhost:8080";
 
     private void notify(EmailNotification emailNotification,
                         String subject,
@@ -58,7 +58,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
         //Setting template variables
         Context context = new Context();
         context.setVariable("username", emailNotification.username());
-        context.setVariable("appUrl", homePageUrl);
+        context.setVariable("appUrl", HOME_PAGE_URL);
 
         this.notify(emailNotification, subject, context, accCreationTemplate);
     }
