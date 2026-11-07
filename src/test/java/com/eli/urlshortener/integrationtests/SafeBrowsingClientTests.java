@@ -1,15 +1,17 @@
 package com.eli.urlshortener.integrationtests;
 
-import com.eli.urlshortener.urlshortener.googlesafebrowsing.SafeBrowsingClient;
-import com.eli.urlshortener.urlshortener.googlesafebrowsing.ThreatOptions;
+import com.eli.urlshortener.googlesafebrowsing.SafeBrowsingClient;
+import com.eli.urlshortener.googlesafebrowsing.ThreatOptions;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class SafeBrowsingClientTest {
+public class SafeBrowsingClientTests {
 
     @Autowired
     private SafeBrowsingClient safeBrowsingClient;

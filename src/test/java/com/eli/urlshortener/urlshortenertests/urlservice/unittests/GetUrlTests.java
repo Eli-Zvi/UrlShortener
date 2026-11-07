@@ -43,7 +43,7 @@ public class GetUrlTests {
     void setUp(){
         testUrl = new Url();
         testUrl.setOriginalUrl("testurl.com");
-        testUrl.setOwner(new AppUser("test","test"));
+        testUrl.setOwner(new AppUser("test","test", "test@gmail.com"));
         testUrl.setId(238328L);
         requestDto = new UrlLookUpRequestDto(Base62.encode(testUrl.getId()));
     }

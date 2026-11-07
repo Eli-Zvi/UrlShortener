@@ -33,7 +33,7 @@ public class AddUrlTests {
 
     @BeforeEach
     void setUp(){
-        appUser = new AppUser("test","test");
+        appUser = new AppUser("test","test", "test@gmail.com");
     }
 
     @Test

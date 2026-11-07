@@ -1,6 +1,7 @@
 package com.eli.urlshortener.usertests.userservice;
 
 import com.eli.urlshortener.appuser.DTOs.UserRegistrationRequestDto;
+import com.eli.urlshortener.email.EmailNotificationService;
 import com.eli.urlshortener.exceptions.UsernameAlreadyExistsException;
 import com.eli.urlshortener.appuser.infrastructure.repositories.UserRepository;
 import com.eli.urlshortener.appuser.AppUser;
@@ -29,6 +30,9 @@ public class RegisterUserTests {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private EmailNotificationService emailNotificationService;
+
     @Spy
     private UserRegistrationMapperImpl mapper;
 
@@ -39,7 +43,7 @@ public class RegisterUserTests {
 
     @BeforeEach
     void setUp(){
-        appUser = new AppUser("test", "test");
+        appUser = new AppUser("test", "test", "test@gmail.com");
     }
 
     @Test
@@ -54,8 +58,11 @@ public class RegisterUserTests {
         assertThrows(UsernameAlreadyExistsException.class, () ->
                 userService.registerUser(
                         new UserRegistrationRequestDto(
-                                appUser.getUsername(), appUser.getPassword()
+                                appUser.getUsername(),
+                                appUser.getPassword(),
+                                appUser.getEmail()
                                 )));
+        verify(emailNotificationService, never()).accCreatedNotification(any());
     }
 
     @Test
@@ -68,17 +75,22 @@ public class RegisterUserTests {
             """)
     void userDoesNotExistTest(){
         when(passwordEncoder.encode("test")).thenReturn("encodedTest");
-        AppUser passEncodedUser = new AppUser(appUser.getUsername(), "encodedTest");
+        AppUser passEncodedUser = new AppUser(appUser.getUsername(), "encodedTest", appUser.getEmail());
         when(userRepository.save(passEncodedUser)).thenReturn(passEncodedUser);
+        doNothing().when(emailNotificationService).accCreatedNotification(any());
+
 
         String result = userService.registerUser((
                 new UserRegistrationRequestDto(
-                        appUser.getUsername(), appUser.getPassword()
+                        appUser.getUsername(),
+                        appUser.getPassword(),
+                        appUser.getEmail()
                 ))).username();
 
         verify(userRepository, times(1)).save(passEncodedUser);
         verify(userRepository, times(0)).save(appUser);
         verify(passwordEncoder, times(1)).encode("test");
+        verify(emailNotificationService, times(1)).accCreatedNotification(any());
         assertEquals(appUser.getUsername(), result);
     }
 }
