@@ -29,6 +29,18 @@ spring:
         enabled: false
   cache:
     type: redis
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_SERVER_USERNAME}
+    password: ${SMTP_SERVER_PASSWORD}
+    properties: #check jakarta.mail documentation for more information of these properties
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 
 logging:
   level:
