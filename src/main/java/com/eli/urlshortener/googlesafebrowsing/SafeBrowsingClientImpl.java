@@ -1,4 +1,4 @@
-package com.eli.urlshortener.urlshortener.googlesafebrowsing;
+package com.eli.urlshortener.googlesafebrowsing;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.eli.urlshortener.urlshortener.googlesafebrowsing.ThreatOptions.*;
+import com.eli.urlshortener.googlesafebrowsing.ThreatOptions.*;
 
 import java.net.URI;
 import java.util.List;
