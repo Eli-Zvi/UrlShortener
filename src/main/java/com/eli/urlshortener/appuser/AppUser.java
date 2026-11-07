@@ -41,6 +41,7 @@ public class AppUser implements UserDetails {
     private String password;
 
     @Email
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Override
