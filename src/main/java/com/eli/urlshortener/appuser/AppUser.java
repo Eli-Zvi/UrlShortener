@@ -1,6 +1,7 @@
 package com.eli.urlshortener.appuser;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AppUser implements UserDetails {
 
-    public AppUser(String username, String password){
+    public AppUser(String username, String password, String email){
         this.username = username;
         this.password = password;
+        this.email = email;
     }
 
     @Id
@@ -37,6 +39,9 @@ public class AppUser implements UserDetails {
     private String username;
     @Column(nullable = false)
     private String password;
+
+    @Email
+    private String email;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

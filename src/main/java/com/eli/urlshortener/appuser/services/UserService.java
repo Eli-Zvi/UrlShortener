@@ -2,6 +2,8 @@ package com.eli.urlshortener.appuser.services;
 
 import com.eli.urlshortener.appuser.DTOs.UserRegistrationRequestDto;
 import com.eli.urlshortener.appuser.DTOs.UserRegistrationResponseDto;
+import com.eli.urlshortener.email.EmailNotificationService;
+import com.eli.urlshortener.email.EmailNotification;
 import com.eli.urlshortener.exceptions.UsernameAlreadyExistsException;
 import com.eli.urlshortener.appuser.infrastructure.repositories.UserRepository;
 import com.eli.urlshortener.appuser.AppUser;
@@ -18,9 +20,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
     private final UserRegistrationMapper userRegistrationMapper;
+    private final EmailNotificationService emailNotificationService;
 
     /**
      * Processes user registration requests
@@ -35,9 +38,18 @@ public class UserService {
         }
 
         AppUser newUser = new AppUser(registrationRequestDto.username(),
-                passwordEncoder.encode(registrationRequestDto.password()));
+                passwordEncoder.encode(registrationRequestDto.password()),
+                registrationRequestDto.email());
 
         userRepository.save(newUser);
+
+        emailNotificationService.accCreatedNotification(
+                new EmailNotification(
+                        registrationRequestDto.username(),
+                        registrationRequestDto.email(),
+                        null
+                )
+        );
 
         return userRegistrationMapper.toResponseDto(newUser);
     }
