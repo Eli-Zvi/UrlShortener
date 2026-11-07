@@ -1,6 +1,7 @@
 package com.eli.urlshortener.urlshortenertests.urlservice.unittests;
 
 import com.eli.urlshortener.appuser.AppUser;
+import com.eli.urlshortener.email.EmailNotificationService;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapperImpl;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
@@ -23,6 +24,9 @@ public class AddUrlTests {
     @Mock
     private UrlRepository urlRepository;
 
+    @Mock
+    private EmailNotificationService emailNotificationService;
+
     @Spy
     private UrlMapperImpl mapper;
 
@@ -33,7 +37,7 @@ public class AddUrlTests {
 
     @BeforeEach
     void setUp(){
-        appUser = new AppUser("test","test");
+        appUser = new AppUser("test","test", "test@gmail.com");
     }
 
     @Test
@@ -46,7 +50,7 @@ public class AddUrlTests {
     void normalizedUrlTest(){
         String normalizedUrl = "https://test.com";
         UrlCreateRequestDto urlCreateRequestDto = new UrlCreateRequestDto(normalizedUrl, null);
-
+        doNothing().when(emailNotificationService).urlCreatedNotification(any());
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> {
             Url url = invocation.getArgument(0);
             url.setId(1000L);
@@ -59,6 +63,7 @@ public class AddUrlTests {
                 url.getOriginalUrl().equals(normalizedUrl) && url.getCreatedAt() != null
                 && url.getOwner().equals(appUser) && url.getLastClicked() == null && url.getDescription().isEmpty()
         ));
+        verify(emailNotificationService, times(1)).urlCreatedNotification(any());
     }
 
     @Test
@@ -71,6 +76,7 @@ public class AddUrlTests {
     void normalizedUrlTest2(){
         String normalizedUrl = "https://test.com";
         UrlCreateRequestDto urlCreateRequestDto = new UrlCreateRequestDto(normalizedUrl, null);
+        doNothing().when(emailNotificationService).urlCreatedNotification(any());
 
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> {
             Url url = invocation.getArgument(0);
@@ -84,6 +90,7 @@ public class AddUrlTests {
                 url.getOriginalUrl().equals(normalizedUrl) && url.getCreatedAt() != null
                         && url.getOwner().equals(appUser) && url.getLastClicked() == null && url.getDescription().isEmpty()
         ));
+        verify(emailNotificationService, times(1)).urlCreatedNotification(any());
     }
 
     @Test
@@ -96,6 +103,7 @@ public class AddUrlTests {
     void unNormalizedUrlTest(){
         String unNormalizedUrl = "test.com";
         UrlCreateRequestDto urlCreateRequestDto = new UrlCreateRequestDto(unNormalizedUrl, null);
+        doNothing().when(emailNotificationService).urlCreatedNotification(any());
 
         when(urlRepository.save(any(Url.class))).thenAnswer(invocation -> {
             Url url = invocation.getArgument(0);
@@ -109,5 +117,6 @@ public class AddUrlTests {
                 url.getOriginalUrl().equals("http://" + unNormalizedUrl) && url.getCreatedAt() != null
                         && url.getOwner().equals(appUser) && url.getLastClicked() == null && url.getDescription().isEmpty()
         ));
+        verify(emailNotificationService, times(1)).urlCreatedNotification(any());
     }
 }

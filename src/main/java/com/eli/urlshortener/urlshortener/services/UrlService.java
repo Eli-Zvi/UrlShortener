@@ -1,13 +1,15 @@
 package com.eli.urlshortener.urlshortener.services;
 
+import com.eli.urlshortener.email.EmailNotification;
+import com.eli.urlshortener.email.EmailNotificationService;
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.exceptions.UnsafeUrlException;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.UrlResponseDto;
-import com.eli.urlshortener.urlshortener.googlesafebrowsing.SafeBrowsingClient;
-import com.eli.urlshortener.urlshortener.googlesafebrowsing.ThreatMatchesResponse;
+import com.eli.urlshortener.googlesafebrowsing.SafeBrowsingClient;
+import com.eli.urlshortener.googlesafebrowsing.ThreatMatchesResponse;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapper;
 import com.eli.urlshortener.urlshortener.models.Url;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
@@ -34,10 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Url Service for the UrlShortener Application
+ * TODO: Separate event publishing, redirection and CRUD to separate services
  * @author Ilay Zvi
  */
 
@@ -50,9 +54,18 @@ public class UrlService {
     private final UrlMapper urlMapper;
 
     private final SafeBrowsingClient safeBrowsingClient;
+    private final EmailNotificationService emailNotificationService;
+
     private final ApplicationEventPublisher eventPublisher;
 
     private final HttpServletRequest httpServletRequest;
+
+    @Value("${server.port}")
+    private String port;
+    @Value("${server.address}")
+    private String address;
+
+    private final String REDIRECTION_BASE_URL = address + ":" + port + "/api/redirect/";
 
 
     @Transactional
@@ -115,7 +128,18 @@ public class UrlService {
         newUrl.setOriginalUrl(normalizeUrl(newUrl.getOriginalUrl()));
         newUrl.setOwner((AppUser)userDetails);
 
-        return urlMapper.mapUrlToResponse(urlRepository.save(newUrl));
+        UrlResponseDto response = urlMapper.mapUrlToResponse(urlRepository.save(newUrl));
+
+        emailNotificationService
+                .urlCreatedNotification(new EmailNotification(
+                        userDetails.getUsername(),
+                        ((AppUser) userDetails).getEmail(),
+                        Map.of(
+                                "originalUrl", response.originalUrl(),
+                                "shortUrl", REDIRECTION_BASE_URL + response.shortCode()
+                        )));
+
+        return response;
     }
 
     /**
@@ -158,10 +182,6 @@ public class UrlService {
                 .toList();
     }
 
-    @Value("${server.port}")
-    private String port;
-    @Value("${server.address}")
-    private String address;
 
     /**
      * Generates qrcode for a given shortCode
@@ -171,7 +191,7 @@ public class UrlService {
      */
     public BufferedImage generateQRCodeImage(UrlLookUpRequestDto urlLookUpRequestDto) throws WriterException {
         QRCodeWriter barcodeWriter = new QRCodeWriter();
-        String serverUrl = normalizeUrl(address + ":" + port + "/api/redirect/" + urlLookUpRequestDto.code().base62Num());
+        String serverUrl = normalizeUrl(REDIRECTION_BASE_URL + urlLookUpRequestDto.code().base62Num());
         BitMatrix bitMatrix =
                 barcodeWriter.encode(serverUrl, BarcodeFormat.QR_CODE, 300, 300);
         log.info(serverUrl);

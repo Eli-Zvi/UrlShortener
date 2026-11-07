@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your URL is ready!</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f6f8; font-family: Arial, Helvetica, sans-serif;">
+
+<table style="width: 100%; border-collapse: collapse; border-spacing: 0; padding: 40px 15px;">
+    <tr>
+        <td style="text-align: center; padding: 40px 15px;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; background-color: #ffffff; border-radius: 10px; overflow: hidden;">
+
+                <tr>
+                    <td style="background-color: #16a34a; padding: 35px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 28px;">
+                            Your link is ready!
+                        </h1>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 40px 35px; color: #333333;">
+                        <h2 style="margin-top: 0;">
+                            Hi <span th:text="${username}">User</span>!
+                        </h2>
+
+                        <p style="font-size: 16px; line-height: 1.6;">
+                            Your URL has been successfully shortened.
+                            You can now share it with anyone!
+                        </p>
+
+                        <p style="font-size: 14px; color: #666666; margin-bottom: 8px;">
+                            Original URL
+                        </p>
+
+                        <div style="padding: 15px; background-color: #f3f4f6; border-radius: 6px; word-break: break-all;">
+                            <a th:href="${originalUrl}"
+                               th:text="${originalUrl}"
+                               style="color: #2563eb; font-size: 14px;">
+                                placeholder
+                            </a>
+                        </div>
+
+                        <p style="font-size: 14px; color: #666666; margin-top: 25px; margin-bottom: 8px;">
+                            Your shortened URL
+                        </p>
+
+                        <div style="padding: 15px; background-color: #ecfdf5; border: 1px solid #bbf7d0; border-radius: 6px; word-break: break-all;">
+                            <a th:href="${shortUrl}"
+                               th:text="${shortUrl}"
+                               style="color: #15803d; font-size: 16px; font-weight: bold;">
+                                placeholder
+                            </a>
+                        </div>
+
+                        <p style="font-size: 14px; color: #666666; margin-top: 25px;">
+                            Keep this email handy if you need to access your shortened URL later.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 20px; text-align: center; background-color: #f9fafb;">
+                        <p style="margin: 0; color: #999999; font-size: 12px;">
+                            &copy; 2026 URL Shortener. All rights reserved.
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
