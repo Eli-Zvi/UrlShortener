@@ -1,0 +1,14 @@
+<h1>URL Shortener</h1>
+
+<p> {{ errorMessage }} </p>
+
+<input
+  [(ngModel)]="originalUrl"
+  placeholder="Enter a long URL"
+/>
+
+<button (click)="shortenUrl()">
+  Shorten
+</button>
+
+<p>{{ shortUrl }}</p>
