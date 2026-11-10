@@ -9,11 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.Map;
+
+/**
+ * Email Notification service to notify users of successful new account creation and successful new url creation
+ */
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +33,13 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 
     private final String HOME_PAGE_URL = "https://localhost:8080";
 
+    /**
+     * Notifies a user with the given information, subject, and template
+     * @param emailNotification the details of the users to send the email to
+     * @param subject the subject of the email
+     * @param context template context, variables to inject to the template
+     * @param template the HTML template to process
+     */
     private void notify(EmailNotification emailNotification,
                         String subject,
                         Context context,
@@ -43,6 +55,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
             messageHelper.setFrom(username); //this may sometimes be necessary to avoid errors
             messageHelper.setTo(emailNotification.email()); //set client email
             messageHelper.setSubject(subject);
+            log.info("Sent an email to user: {}", username);
         }catch (MessagingException ignored){
             log.info("Error occurred while sending an email to user: {}", emailNotification.username());
         }
@@ -50,7 +63,12 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
         javaMailSender.send(message);
     }
 
+    /**
+     * Asynchronously assemble and notify users of successful account creation
+     * @param emailNotification the details of the user and the required template variables
+     */
     @Override
+    @Async
     public void accCreatedNotification(EmailNotification emailNotification) {
         final String accCreationTemplate = "account-created.html";
         final String subject = String.format("Welcome to UrlShortener %s!", emailNotification.username());
@@ -63,10 +81,16 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
         this.notify(emailNotification, subject, context, accCreationTemplate);
     }
 
+    /**
+     * Asynchronously assemble and notify users of successful url creation
+     * @param emailNotification the details of the user and the required template variables
+     */
     @Override
+    @Async
     public void urlCreatedNotification(EmailNotification emailNotification) {
         final String urlCreationTemplate = "url-created.html";
         final String subject = "Successfully Registered a New Url";
+
         //Setting template variables
         Context context = new Context();
         context.setVariable("username", emailNotification.username());
