@@ -10,7 +10,7 @@ spring:
       enabled: true
   datasource:
     generate-unique-name: false
-    name: url_shortener
+    name: ${DATASOURCE_NAME}
     url: ${URL_SHORTENER_DB_URL}
     username: ${URL_SHORTENER_DB_USERNAME}
     password: ${URL_SHORTENER_DB_PASSWORD}
@@ -49,5 +49,5 @@ logging:
     org.springframework.web: DEBUG
 
 server:
-  port: 8080
-  address: "localhost"
+  port: ${SERVER_PORT}
+  address: ${SERVER_ADDRESS}

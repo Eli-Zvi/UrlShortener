@@ -7,6 +7,7 @@ import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.exceptions.UnsafeUrlException;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
 import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
+import com.eli.urlshortener.urlshortener.UrlRedirectEvent;
 import com.eli.urlshortener.urlshortener.UrlResponseDto;
 import com.eli.urlshortener.googlesafebrowsing.SafeBrowsingClient;
 import com.eli.urlshortener.googlesafebrowsing.ThreatMatchesResponse;
@@ -19,6 +20,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,9 +67,22 @@ public class UrlService {
     @Value("${server.address}")
     private String address;
 
-    private final String REDIRECTION_BASE_URL = address + ":" + port + "/api/redirect/";
+    private String REDIRECTION_BASE_URL;
+
+    /**
+     * Construct the base url for redirection after values were injected
+     */
+    @PostConstruct
+    private void init() {
+        REDIRECTION_BASE_URL = address + ":" + port + "/api/redirect/";
+    }
 
 
+    /**
+     * Retrieves a url with the given shortcode, calls onto redirect to create a UrlResponseDto and publish an event
+     * @param urlLookUpRequestDto a request dto including a shortcode
+     * @return a UrlResponseDto including the original url to redirect to
+     */
     @Transactional
     // TODO: find a way to cache it while still publishing a redirection event
     //  @Cacheable(value = "REDIRECT_CACHE", key = "#urlLookUpRequestDto.code()")
@@ -76,6 +91,12 @@ public class UrlService {
         return redirect(redirectUrl);
     }
 
+    /**
+     * Retrieves a url with the given shortcode, calls onto safe browsing client to check if the link is safe,
+     * if the link is safe calls onto redirect to create a UrlResponseDto and publish an event
+     * @param urlLookUpRequestDto a request dto including a shortcode
+     * @return a UrlResponseDto including the original url to redirect to if the link is secure, otherwise throws UnsafeUrlException
+     */
     @Transactional
     public UrlResponseDto secureRedirection(UrlLookUpRequestDto urlLookUpRequestDto){
         Url redirectUrl = this.fetchUrl(urlLookUpRequestDto.code());
@@ -87,33 +108,43 @@ public class UrlService {
                     urlLookUpRequestDto.code(), response.matches().getFirst().threatType()
             ));
         }
+
         return this.redirect(redirectUrl);
     }
 
     /**
-     * Retrieves, updates, and publishes a Url
-     * Retrieves a url with the given shortcode
-     * Updates lastClicked
-     * Retrieves redirected user, referrer and user agent
+     * Updates lastClicked, and calls onto publishRedirectionEvent to publishes a Url
      * Saves the updated information
-     * Publishes an event including the event details(Url, and the information listed above)
-     * @param redirectUrl a Url to redirect to
+     * @param redirectUrl a Url to redirect a user to
      * @return a {@code UrlResponseDto} including information about the redirection {@code Url}
      */
     private UrlResponseDto redirect(Url redirectUrl){
         redirectUrl.setLastClicked(Instant.now());
 
+        urlRepository.save(redirectUrl);
+
+        this.publishRedirectionEvent(redirectUrl);
+
+        return urlMapper.mapUrlToResponse(redirectUrl);
+    }
+
+    /**
+     * Publishes a redirection event
+     * Retrieves redirected user, referrer and user agent
+     * Publishes an event including the event details(Url, and the information listed above)
+     * @param redirectUrl a Url that a user was redirect to
+     */
+    private void publishRedirectionEvent(Url redirectUrl){
         String redirectedUser = this.getRedirectedUser();
 
         String referrer = this.getReferrer();
 
         String userAgent = this.getUserAgent();
 
-        urlRepository.save(redirectUrl);
-
-        eventPublisher.publishEvent(urlMapper.UrltoUrlRedirectEvent(redirectUrl, redirectedUser, userAgent, referrer));
-
-        return urlMapper.mapUrlToResponse(redirectUrl);
+        //separate and read about the pros and cons of making it async, could also look into batching
+        UrlRedirectEvent redirectionEvent = urlMapper.UrltoUrlRedirectEvent(redirectUrl, redirectedUser, userAgent, referrer);
+        log.info("Publishing Event: {}", redirectionEvent);
+        eventPublisher.publishEvent(redirectionEvent);
     }
 
     /**
@@ -136,7 +167,7 @@ public class UrlService {
                         ((AppUser) userDetails).getEmail(),
                         Map.of(
                                 "originalUrl", response.originalUrl(),
-                                "shortUrl", REDIRECTION_BASE_URL + response.shortCode()
+                                "shortUrl", REDIRECTION_BASE_URL + response.shortCode().base62Num()
                         )));
 
         return response;
@@ -169,7 +200,7 @@ public class UrlService {
     @Cacheable(value = "URL_CACHE", key = "#urlLookUpRequestDto.code()")
     //Look for a cache hit and skips method if successful, otherwise add the fetched URL to cache
     public UrlResponseDto getUrl(UrlLookUpRequestDto urlLookUpRequestDto){
-        return urlMapper.mapUrlToResponse(fetchUrl(urlLookUpRequestDto.code()));
+        return urlMapper.mapUrlToResponse(this.fetchUrl(urlLookUpRequestDto.code()));
     }
 
     /**

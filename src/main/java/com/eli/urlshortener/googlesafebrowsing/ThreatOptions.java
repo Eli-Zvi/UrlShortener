@@ -1,5 +1,8 @@
 package com.eli.urlshortener.googlesafebrowsing;
 
+/**
+ * This class represents the different fields used by ThreatMatchesResponse and ThreatMatchesRequest
+ */
 public class ThreatOptions {
 
     public record ThreatEntry(String url){
