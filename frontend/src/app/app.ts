@@ -14,7 +14,7 @@ export class App {
   errorMessage = '';
 
   shortenUrl() : void{
-    
+
     if (this.originalUrl.length === 0) {
       this.errorMessage = 'url field is empty';
       this.shortUrl = '';
