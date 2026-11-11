@@ -8,6 +8,8 @@ A RESTful URL shortening service built with Java and Spring Boot. The applicatio
 - **URL Management:** Retrieve URL details, list URLs, and delete shortened URLs.
 - **User Registration:** Register application users.
 - **URL Redirection:** Redirect visitors to the original destination associated with a short code.
+- **Safe URL Redirection:** Redirect visitors to the original destination associated with a short code after checking that the URL is safe.
+- **User Notification:** Notifies user on successful account creation and successful URL registration
 - **QR Code Generation:** Generate QR code images for existing shortened URLs using their short codes.
 - **Click Analytics:** Retrieve redirection events and total click counts for individual URLs.
 - **Visit Tracking:** Record redirection metadata, including timestamps, user agents, and referrers.
@@ -32,6 +34,8 @@ A RESTful URL shortening service built with Java and Spring Boot. The applicatio
 | Docker          | Containerization                               |
 | Maven           | Build and dependency management                |
 | Google ZXing    | Barcode encoding                               |
+| Google Safe Browsing API | URL security checks                   |
+| Google SMTP     | User notifications                             |
 
 ## Architecture
 
