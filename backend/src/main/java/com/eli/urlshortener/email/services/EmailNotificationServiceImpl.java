@@ -55,7 +55,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
             messageHelper.setFrom(username); //this may sometimes be necessary to avoid errors
             messageHelper.setTo(emailNotification.email()); //set client email
             messageHelper.setSubject(subject);
-            log.info("Sent an email to user: {}", username);
+            log.info("Sent an email to user: {}", emailNotification.username());
         }catch (MessagingException ignored){
             log.info("Error occurred while sending an email to user: {}", emailNotification.username());
         }
