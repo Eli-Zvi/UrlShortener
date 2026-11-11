@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Ilay Zvi
  */
 @RestController
+@CrossOrigin
 @RequestMapping(value = "/", consumes = "application/json")
 @RequiredArgsConstructor
 public class UserRegistrationController {

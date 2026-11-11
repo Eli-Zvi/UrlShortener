@@ -2,7 +2,7 @@ package com.eli.urlshortener.usertests.userservice;
 
 import com.eli.urlshortener.appuser.DTOs.UserRegistrationRequestDto;
 import com.eli.urlshortener.email.EmailNotificationService;
-import com.eli.urlshortener.exceptions.UsernameAlreadyExistsException;
+import com.eli.urlshortener.exceptions.UsernameEmailAlreadyExistsException;
 import com.eli.urlshortener.appuser.infrastructure.repositories.UserRepository;
 import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.appuser.services.UserService;
@@ -53,9 +53,9 @@ public class RegisterUserTests {
             THEN: an exception of type UsernameAlreadyExistsException is thrown
             """)
     void userExistsTest(){
-        when(userRepository.existsByUsername("test")).thenReturn(true);
+        when(userRepository.existsByUsernameOrEmail("test", "test@gmail.com")).thenReturn(true);
 
-        assertThrows(UsernameAlreadyExistsException.class, () ->
+        assertThrows(UsernameEmailAlreadyExistsException.class, () ->
                 userService.registerUser(
                         new UserRegistrationRequestDto(
                                 appUser.getUsername(),
