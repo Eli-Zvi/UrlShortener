@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * Global Exception handler for the Url and UrlAnalytics applications
  * @author Ilay Zvi
+ * TODO: Separate user authentication and registration errors to a different exception handler
  */
 @RestControllerAdvice
 public class UrlExceptionHandler {
@@ -53,12 +54,12 @@ public class UrlExceptionHandler {
     }
 
     /**
-     * Intercepts and handles UsernameAlreadyExistsException
-     * @param ex - thrown UsernameAlreadyExistsException
+     * Intercepts and handles UsernameEmailAlreadyExistsException
+     * @param ex - thrown UsernameEmailAlreadyExistsException
      * @return ProblemDetail with CONFLICT status and a description of the error
      */
-    @ExceptionHandler(UsernameAlreadyExistsException.class)
-    public ProblemDetail handleUsernameExistsException(UsernameAlreadyExistsException ex){
+    @ExceptionHandler(UsernameEmailAlreadyExistsException.class)
+    public ProblemDetail handleUsernameEmailExistsException(UsernameEmailAlreadyExistsException ex){
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 

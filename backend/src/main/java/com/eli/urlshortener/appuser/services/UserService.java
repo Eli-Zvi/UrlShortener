@@ -4,7 +4,7 @@ import com.eli.urlshortener.appuser.DTOs.UserRegistrationRequestDto;
 import com.eli.urlshortener.appuser.DTOs.UserRegistrationResponseDto;
 import com.eli.urlshortener.email.EmailNotificationService;
 import com.eli.urlshortener.email.EmailNotification;
-import com.eli.urlshortener.exceptions.UsernameAlreadyExistsException;
+import com.eli.urlshortener.exceptions.UsernameEmailAlreadyExistsException;
 import com.eli.urlshortener.appuser.infrastructure.repositories.UserRepository;
 import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.appuser.infrastructure.mappers.UserRegistrationMapper;
@@ -29,12 +29,12 @@ public class UserService {
      * Processes user registration requests
      * @param registrationRequestDto - a Registration Request
      * @return a UserRegistrationResponseDto
-     * @throws UsernameAlreadyExistsException if the user exists
+     * @throws UsernameEmailAlreadyExistsException if the user exists
      */
     public UserRegistrationResponseDto registerUser(UserRegistrationRequestDto registrationRequestDto){
-        if (userRepository.existsByUsername(registrationRequestDto.username())){
-            throw new UsernameAlreadyExistsException(String.format("Username %s already exists",
-                    registrationRequestDto.username()));
+        if (userRepository.existsByUsernameOrEmail(registrationRequestDto.username(), registrationRequestDto.email())){
+            throw new UsernameEmailAlreadyExistsException(String.format("Username %s or Email %s already exists",
+                    registrationRequestDto.username(), registrationRequestDto.email()));
         }
 
         AppUser newUser = new AppUser(registrationRequestDto.username(),
