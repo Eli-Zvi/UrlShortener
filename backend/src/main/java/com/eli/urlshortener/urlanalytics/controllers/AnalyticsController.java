@@ -5,7 +5,6 @@ import com.eli.urlshortener.urlanalytics.DTOs.RedirectionEventResponseDto;
 import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksRequestDto;
 import com.eli.urlshortener.urlanalytics.DTOs.TotalClicksResponseDto;
 import com.eli.urlshortener.urlanalytics.services.AnalyticsService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -26,25 +25,27 @@ public class AnalyticsController {
 
     /**
      * Gets a list of redirection events for the specified shortCode
-     * @param requestDto - A RedirectionEventRequestDto
+     * @param code - A shortcode to look up
      * @return a List of RedirectionEventResponseDto
      * TODO: Add pagination, sorting and filtering
      */
     @GetMapping("/{shortCode}")
     public List<RedirectionEventResponseDto> getUrlRedirectionEvents(
-            @PathVariable("shortCode") @Valid RedirectionEventRequestDto requestDto){
+            @PathVariable("shortCode") String code){
+        RedirectionEventRequestDto requestDto = new RedirectionEventRequestDto(code); //validation occurs in here through Base62
         return analyticsService.getUrlRedirectionEvents(requestDto);
     }
 
     /**
      * Get the total clicks for a specified shortCode
-     * @param requestDto - A TotalClicksRequestDto
-     * @return  a TotalClicksResponseDto for the specific shortcode
+     * @param code - A shortcode to look up
+     * @return a TotalClicksResponseDto for the specific shortcode
      */
     @GetMapping(value = "/totalClicks/{shortCode}")
     @ResponseStatus(HttpStatus.OK)
     public TotalClicksResponseDto getTotalClicks(
-            @PathVariable("shortCode") @Valid TotalClicksRequestDto requestDto){
+            @PathVariable("shortCode") String code){
+        TotalClicksRequestDto requestDto = new TotalClicksRequestDto(code); //validation occurs in here through Base62
         return analyticsService.getTotalClicks(requestDto);
     }
 }

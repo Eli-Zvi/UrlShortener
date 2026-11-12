@@ -2,6 +2,7 @@ package com.eli.urlshortener.util;
 
 import com.eli.urlshortener.exceptions.IllegalShortCodeException;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A class representing a Base62 number
@@ -11,17 +12,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public record Base62(String base62Num) {
 
-    private final static String base62Dic = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private final static int base = 62;
+    private final static String BASE_62_DIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final static int BASE = 62;
 
     public Base62 {
+        if(base62Num == null){
+            this.throwIllegalShortCode(null);
+        }
         base62Num = base62Num.strip();
         validateBase62String(base62Num);
     }
 
     /**
      * Static Constructor using a Long
-     * @param num
+     * @param num a base 10 number to encode to base 62
      * @return an instance of Base62 with the given num converted to Base62
      */
     public static Base62 encode(Long num){
@@ -37,10 +41,10 @@ public record Base62(String base62Num) {
         int counter = 1;
 
         while(num > 0){
-            int placeValue = (int) Math.pow(base, counter); //calculate the current place value
+            int placeValue = (int) Math.pow(BASE, counter); //calculate the current place value
             int mod = Math.toIntExact(num % placeValue); //find the remainder
-            int index = mod / (placeValue / 62); //divide the remainder by the base that it correlates to
-            char encodedChar = base62Dic.charAt(index); //get the base62 char for the index
+            int index = mod / (placeValue / 62); //divide the remainder by the BASE that it correlates to
+            char encodedChar = BASE_62_DIC.charAt(index); //get the base62 char for the index
             encodedNum.append(encodedChar);
 
             num -= (index * (placeValue / 62));
@@ -52,7 +56,7 @@ public record Base62(String base62Num) {
 
     /**
      * Decodes the object's Base62 number to a Long(base10)
-     * @return a decoded Base62 number in the form of base 10(Long)
+     * @return a decoded Base62 number in the form of BASE 10(Long)
      */
     public Long decode(){
         long result = 0L;
@@ -60,24 +64,33 @@ public record Base62(String base62Num) {
 
         while(counter != this.base62Num.length()){
             char currentChar = this.base62Num.charAt(counter);
-            int placeValue = (int) Math.pow(base, this.base62Num.length() - counter - 1); //placeValue offset by 1 to account for last char
-            result +=  ((long) base62Dic.indexOf(currentChar) * (placeValue));
+            int placeValue = (int) Math.pow(BASE, this.base62Num.length() - counter - 1); //placeValue offset by 1 to account for last char
+            result +=  ((long) BASE_62_DIC.indexOf(currentChar) * (placeValue));
             counter++;
         }
 
         return result;
     }
 
+    @Override
+    public @NotNull String toString() {
+        return base62Num;
+    }
+
     private void validateBase62String(String num){
         if(num.isEmpty()){
-            throw new IllegalShortCodeException(String.format("Illegal shortcode received %s", num));
+            this.throwIllegalShortCode(num);
         }
 
         for(char c : num.toCharArray()){
             if(!Character.isLetterOrDigit(c)){
                 log.info("Base62 conversion unsuccessful: {}", num);
-                throw new IllegalShortCodeException(String.format("Illegal shortcode received %s", num));
+                this.throwIllegalShortCode(num);
             }
         }
+    }
+
+    private void throwIllegalShortCode(String num){
+        throw new IllegalShortCodeException(String.format("Illegal shortcode received %s", num));
     }
 }
