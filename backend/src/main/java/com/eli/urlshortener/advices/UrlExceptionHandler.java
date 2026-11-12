@@ -70,19 +70,22 @@ public class UrlExceptionHandler {
      */
     @ExceptionHandler({IllegalShortCodeException.class, ShortCodeNotFoundException.class})
     public ProblemDetail handleShortCodeError(RuntimeException ex){
-        switch (ex){
-            case IllegalShortCodeException urlEx -> {
-                return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, urlEx.getMessage());
-            }
+        Throwable cause = ex;
 
-            case ShortCodeNotFoundException urlEx -> {
-                return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, urlEx.getMessage());
-            }
-
-            default -> {
-                return ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-            }
+        while (cause.getCause() != null) {
+            cause = cause.getCause();
         }
+
+        return switch (cause){
+            case IllegalShortCodeException urlEx ->
+                ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, urlEx.getMessage());
+
+            case ShortCodeNotFoundException urlEx ->
+                ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, urlEx.getMessage());
+
+            default -> ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+
+        };
     }
 
     @ExceptionHandler(UnsafeUrlException.class)

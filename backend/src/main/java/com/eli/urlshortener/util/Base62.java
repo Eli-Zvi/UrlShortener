@@ -2,6 +2,7 @@ package com.eli.urlshortener.util;
 
 import com.eli.urlshortener.exceptions.IllegalShortCodeException;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A class representing a Base62 number
@@ -16,7 +17,7 @@ public record Base62(String base62Num) {
 
     public Base62 {
         if(base62Num == null){
-            this.throwIllegalShortCode(base62Num);
+            this.throwIllegalShortCode(null);
         }
         base62Num = base62Num.strip();
         validateBase62String(base62Num);
@@ -69,6 +70,11 @@ public record Base62(String base62Num) {
         }
 
         return result;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return base62Num;
     }
 
     private void validateBase62String(String num){

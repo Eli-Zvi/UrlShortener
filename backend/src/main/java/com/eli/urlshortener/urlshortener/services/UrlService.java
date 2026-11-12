@@ -6,7 +6,6 @@ import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.eli.urlshortener.appuser.AppUser;
 import com.eli.urlshortener.exceptions.UnsafeUrlException;
 import com.eli.urlshortener.urlshortener.DTOs.UrlCreateRequestDto;
-import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.UrlRedirectEvent;
 import com.eli.urlshortener.urlshortener.UrlResponseDto;
 import com.eli.urlshortener.googlesafebrowsing.SafeBrowsingClient;
@@ -80,33 +79,35 @@ public class UrlService {
 
     /**
      * Retrieves a url with the given shortcode, calls onto redirect to create a UrlResponseDto and publish an event
-     * @param urlLookUpRequestDto a request dto including a shortcode
+     * @param code - a Base62 shortcode that may correspond to an original url
      * @return a UrlResponseDto including the original url to redirect to
      */
     @Transactional
     // TODO: find a way to cache it while still publishing a redirection event,
     //  consider the fact that many people can ask for the same redirect link at once and lock up db
     //  @Cacheable(value = "REDIRECT_CACHE", key = "#urlLookUpRequestDto.code()")
-    public UrlResponseDto getRedirectUrl(UrlLookUpRequestDto urlLookUpRequestDto){
-        Url redirectUrl = this.fetchUrl(urlLookUpRequestDto.code());
+    public UrlResponseDto getRedirectUrl(Base62 code){
+        Url redirectUrl = this.fetchUrl(code);
         return redirect(redirectUrl);
     }
 
     /**
      * Retrieves a url with the given shortcode, calls onto safe browsing client to check if the link is safe,
      * if the link is safe calls onto redirect to create a UrlResponseDto and publish an event
-     * @param urlLookUpRequestDto a request dto including a shortcode
+     * @param code - a Base62 shortcode that may correspond to an original url
      * @return a UrlResponseDto including the original url to redirect to if the link is secure, otherwise throws UnsafeUrlException
      */
     @Transactional
-    public UrlResponseDto secureRedirection(UrlLookUpRequestDto urlLookUpRequestDto){
-        Url redirectUrl = this.fetchUrl(urlLookUpRequestDto.code());
+    public UrlResponseDto secureRedirection(Base62 code){
+
+        Url redirectUrl = this.fetchUrl(code);
+
         ThreatMatchesResponse response = safeBrowsingClient.findThreats(redirectUrl.getOriginalUrl());
 
         if(response.matches() != null){
             throw new UnsafeUrlException(
                     String.format("The given shortcode: %s is unsafe. Google's Safe API has detected the following threat: %s",
-                    urlLookUpRequestDto.code(), response.matches().getFirst().threatType()
+                    code.base62Num(), response.matches().getFirst().threatType()
             ));
         }
 
@@ -168,40 +169,34 @@ public class UrlService {
                         ((AppUser) userDetails).getEmail(),
                         Map.of(
                                 "originalUrl", response.originalUrl(),
-                                "shortUrl", REDIRECTION_BASE_URL + response.shortCode().base62Num()
+                                "shortUrl", REDIRECTION_BASE_URL + response.shortCode()
                         )));
 
         return response;
     }
 
     /**
-     * Deletes a Url with the given shortCode
-     * @param urlLookUpRequestDto a request dto including a shortcode
-     * @throws ShortCodeNotFoundException if a url with the given shortCode does not exist
+     * Deletes a Url with the given shortCode or silently ignores if it does not exist
+     * @param code - a Base62 shortcode that may correspond to an original url
      */
     //TODO: Add authentication that the user trying to delete a Url is the one that created it
-    @CacheEvict(value = {"URL_CACHE", "REDIRECT_CACHE"}, key = "#urlLookUpRequestDto.code()") //evict deleted URL from url cache and redirect cache
-    public void deleteUrl(UrlLookUpRequestDto urlLookUpRequestDto){
-        Base62 code = urlLookUpRequestDto.code();
+    @CacheEvict(value = "URL_CACHE", key = "#code") //evict deleted URL from url cache and redirect cache
+    public void deleteUrl(Base62 code){
         Long id = code.decode();
-
-        if(!urlRepository.existsById(id)){
-            throw new ShortCodeNotFoundException(String.format("Short code %s does not exist", code));
-        }
 
         urlRepository.deleteById(id);
     }
 
     /**
      * Retrieves a URL from the repository
-     * @param urlLookUpRequestDto - a request dto including a shortcode
+     * @param code - a Base62 shortcode that may correspond to an original url
      * @return a {@code UrlResponseDto} corresponding to the request
      * @throws ShortCodeNotFoundException if a URL can't be fetched successfully with the given shortCode
      */
-    @Cacheable(value = "URL_CACHE", key = "#urlLookUpRequestDto.code()")
+    @Cacheable(value = "URL_CACHE", key = "#code")
     //Look for a cache hit and skips method if successful, otherwise add the fetched URL to cache
-    public UrlResponseDto getUrl(UrlLookUpRequestDto urlLookUpRequestDto){
-        return urlMapper.mapUrlToResponse(this.fetchUrl(urlLookUpRequestDto.code()));
+    public UrlResponseDto getUrl(Base62 code){
+        return urlMapper.mapUrlToResponse(this.fetchUrl(code));
     }
 
     /**
@@ -217,13 +212,13 @@ public class UrlService {
 
     /**
      * Generates qrcode for a given shortCode
-     * @param urlLookUpRequestDto - a request dto including a shortcode
+     * @param code - a Base62 shortcode that may correspond to an original url
      * @return a QRCode to the link serverAddress:port/api/redirect/{@code urlLookUpRequestDto.shortCode}
      * @throws WriterException - Writer Framework error during barcode creation
      */
-    public BufferedImage generateQRCodeImage(UrlLookUpRequestDto urlLookUpRequestDto) throws WriterException {
+    public BufferedImage generateQRCodeImage(Base62 code) throws WriterException {
         QRCodeWriter barcodeWriter = new QRCodeWriter();
-        String serverUrl = normalizeUrl(REDIRECTION_BASE_URL + urlLookUpRequestDto.code().base62Num());
+        String serverUrl = normalizeUrl(REDIRECTION_BASE_URL + code);
         BitMatrix bitMatrix =
                 barcodeWriter.encode(serverUrl, BarcodeFormat.QR_CODE, 300, 300);
         log.info(serverUrl);

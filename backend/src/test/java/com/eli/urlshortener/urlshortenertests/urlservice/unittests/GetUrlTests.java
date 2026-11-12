@@ -1,7 +1,6 @@
 package com.eli.urlshortener.urlshortenertests.urlservice.unittests;
 
 import com.eli.urlshortener.exceptions.ShortCodeNotFoundException;
-import com.eli.urlshortener.urlshortener.DTOs.UrlLookUpRequestDto;
 import com.eli.urlshortener.urlshortener.UrlResponseDto;
 import com.eli.urlshortener.urlshortener.infrastructure.mappers.UrlMapperImpl;
 import com.eli.urlshortener.urlshortener.infrastructure.repositories.UrlRepository;
@@ -37,7 +36,7 @@ public class GetUrlTests {
     private UrlService urlService;
 
     private Url testUrl;
-    private UrlLookUpRequestDto requestDto;
+    private Base62 code;
 
     @BeforeEach
     void setUp(){
@@ -45,7 +44,7 @@ public class GetUrlTests {
         testUrl.setOriginalUrl("testurl.com");
         testUrl.setOwner(new AppUser("test","test", "test@gmail.com"));
         testUrl.setId(238328L);
-        requestDto = new UrlLookUpRequestDto(Base62.encode(testUrl.getId()));
+        code = Base62.encode(testUrl.getId());
     }
 
     @Test
@@ -61,7 +60,7 @@ public class GetUrlTests {
 
         //assertions and verifications
         assertThrows(
-            ShortCodeNotFoundException.class, () -> urlService.getUrl(requestDto)
+            ShortCodeNotFoundException.class, () -> urlService.getUrl(code)
         );
     }
 
@@ -76,7 +75,7 @@ public class GetUrlTests {
         when(urlRepository.findById(testUrl.getId())).thenReturn(Optional.of(testUrl));
 
         //method call
-        UrlResponseDto result = urlService.getUrl(requestDto);
+        UrlResponseDto result = urlService.getUrl(code);
 
         //assertions and verifications
         verify(urlRepository, times(1)).findById(testUrl.getId());
