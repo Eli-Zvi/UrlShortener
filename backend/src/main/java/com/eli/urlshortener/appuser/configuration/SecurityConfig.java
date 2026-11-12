@@ -41,7 +41,7 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.cors(Customizer.withDefaults());
         httpSecurity.authorizeHttpRequests((authorize) ->{
-            authorize.requestMatchers("/error", "/register", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
+            authorize.requestMatchers("/error", "/register", "/swagger-ui/**", "/v3/api-docs/**", "/chat").permitAll();
            authorize.requestMatchers("/api/redirect/**").permitAll();
            authorize.requestMatchers("/api/**").authenticated();
            authorize.requestMatchers("/h2-console/**").permitAll();

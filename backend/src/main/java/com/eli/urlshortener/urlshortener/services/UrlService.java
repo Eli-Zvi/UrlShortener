@@ -84,7 +84,8 @@ public class UrlService {
      * @return a UrlResponseDto including the original url to redirect to
      */
     @Transactional
-    // TODO: find a way to cache it while still publishing a redirection event
+    // TODO: find a way to cache it while still publishing a redirection event,
+    //  consider the fact that many people can ask for the same redirect link at once and lock up db
     //  @Cacheable(value = "REDIRECT_CACHE", key = "#urlLookUpRequestDto.code()")
     public UrlResponseDto getRedirectUrl(UrlLookUpRequestDto urlLookUpRequestDto){
         Url redirectUrl = this.fetchUrl(urlLookUpRequestDto.code());
