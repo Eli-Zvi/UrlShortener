@@ -5,9 +5,6 @@ spring:
   application:
     name: URL_SHORTENER
     version: "@project.version@"
-  h2:
-    console:
-      enabled: true
   datasource:
     generate-unique-name: false
     name: ${DATASOURCE_NAME}
@@ -42,6 +39,13 @@ spring:
           auth: true
           starttls:
             enable: true
+  ai:
+    openai:
+      api-key: ${GROQ_API_KEY}
+      base-url: https://api.groq.com/openai/v1
+      chat:
+        model: openai/gpt-oss-20b
+
 
 
 logging:
